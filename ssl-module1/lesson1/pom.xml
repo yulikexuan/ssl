@@ -16,7 +16,7 @@
 
     <parent>
         <groupId>com.yulikexuan.ssl</groupId>
-        <artifactId>module1</artifactId>
+        <artifactId>ssl-module1</artifactId>
         <version>201902</version>
         <relativePath>../pom.xml</relativePath>
     </parent>

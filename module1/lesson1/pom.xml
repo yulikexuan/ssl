@@ -1,0 +1,24 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+                             http://maven.apache.org/xsd/maven-4.0.0.xsd">
+                             
+    <modelVersion>4.0.0</modelVersion>
+    
+    <description>
+        The Learn Spring Security Course Module  1 - Lesson 1
+    </description>
+    <name>lesson-1</name>
+
+    <groupId>com.yulikexuan.ssl.m1</groupId>
+    <artifactId>lesson1</artifactId>
+    <packaging>jar</packaging>
+
+    <parent>
+        <groupId>com.yulikexuan.ssl</groupId>
+        <artifactId>module1</artifactId>
+        <version>201902</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+</project>

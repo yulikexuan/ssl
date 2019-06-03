@@ -8,3 +8,10 @@ spring:
     accesslog:
       enabled: true
     basedir: target/tomcat
+  security:
+    user:
+      name: username
+      password: password
+    basic:
+      authorize-mode: authenticated
+      path: /**

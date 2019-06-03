@@ -22,19 +22,14 @@
     <properties>
         
         <java.version>11</java.version>
+        <jaxb.version>2.3.1</jaxb.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
-        <argLine>--illegal-access=permit</argLine>
-        
+        <junit-jupiter.version>5.4.2</junit-jupiter.version>
+
         <!-- non-dependencies -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <jaxb.version>2.3.1</jaxb.version>
-        <junit-jupiter.version>5.4.2</junit-jupiter.version>
-        
-        <!-- maven plugins -->
-		<maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
 
     </properties>
 
@@ -43,6 +38,7 @@
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.version}</version>
         </dependency>
 
         <dependency>
@@ -86,31 +82,16 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-jasper</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>jstl</artifactId>
-        </dependency>
-        
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         
-        <dependency>
-            <groupId>nz.net.ultraq.thymeleaf</groupId>
-            <artifactId>thymeleaf-layout-dialect</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>nz.net.ultraq.thymeleaf</groupId>-->
+<!--            <artifactId>thymeleaf-layout-dialect</artifactId>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

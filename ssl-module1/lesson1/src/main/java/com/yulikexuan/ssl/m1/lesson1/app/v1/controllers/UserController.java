@@ -59,7 +59,8 @@ public class UserController {
     }
 
     @RequestMapping(params = "form", method = RequestMethod.GET)
-    public String createForm(@ModelAttribute UserDto user) {
+    public String createForm(@ModelAttribute(value="user") UserDto user) {
+        user.setUsername("");
         return "users/form";
     }
 

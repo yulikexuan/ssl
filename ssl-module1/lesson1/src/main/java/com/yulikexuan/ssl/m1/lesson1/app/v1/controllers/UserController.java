@@ -60,7 +60,7 @@ public class UserController {
 
     @RequestMapping(params = "form", method = RequestMethod.GET)
     public String createForm(@ModelAttribute(value="user") UserDto user) {
-        user.setUsername("");
+        user.setId(-1L);
         return "users/form";
     }
 
@@ -71,7 +71,9 @@ public class UserController {
             return new ModelAndView("users/form",
                     "formErrors", result.getAllErrors());
         }
-        this.userService.saveUser(userMapper.userDtoToUser(userDto));
+        User savedUser = this.userService.saveUser(
+                userMapper.userDtoToUser(userDto));
+        userDto.setId(savedUser.getId());
         redirect.addFlashAttribute("globalMessage",
                 "Successfully created a new userDto");
         return new ModelAndView("redirect:/{userDto.id}",

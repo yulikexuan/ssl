@@ -71,12 +71,12 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
         http
             .authorizeRequests()
                 .antMatchers("/delete/**")
-                .hasRole("ADMIN") // "ROLE_" prefix will be auto-inserted
-                .anyRequest()
-                .authenticated()
+                // .hasRole("ADMIN") // "ROLE_" prefix will be auto-inserted
                 // .hasAnyRole("ADMIN", "ADMIN2");
                 // .hasAnyAuthority("ROLE_ADMIN", "ROLE_ADMIN2");
-                // .hasAuthority("ROLE_ADMIN")
+                .hasAuthority("ROLE_ADMIN")
+                .anyRequest()
+                .authenticated()
             .and()
                 .formLogin()
             .and()

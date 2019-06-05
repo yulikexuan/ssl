@@ -1,6 +1,6 @@
 # Allow Thymeleaf templates to be reloaded at dev time
 server:
-  port: 8081
+  port: 8082
 spring:
   thymeleaf:
     cache: false

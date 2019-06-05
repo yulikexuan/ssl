@@ -6,12 +6,12 @@
     <modelVersion>4.0.0</modelVersion>
     
     <description>
-        The Learn Spring Security Course Module  1 - Lesson 2
+        The Learn Spring Security Course Module  1 - Lesson 3
     </description>
-    <name>lesson-2</name>
+    <name>lesson-3</name>
 
     <groupId>com.yulikexuan.ssl.m1</groupId>
-    <artifactId>lesson2</artifactId>
+    <artifactId>lesson3</artifactId>
     <packaging>jar</packaging>
 
     <parent>

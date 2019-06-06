@@ -80,7 +80,7 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .formLogin()
                 .loginPage("/login")
-                .permitAll()~~
+                .permitAll()
                 .loginProcessingUrl("/whoareyou");
 
     }// @formatter:off

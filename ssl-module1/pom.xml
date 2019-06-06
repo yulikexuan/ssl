@@ -95,11 +95,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-        
-<!--        <dependency>-->
-<!--            <groupId>nz.net.ultraq.thymeleaf</groupId>-->
-<!--            <artifactId>thymeleaf-layout-dialect</artifactId>-->
-<!--        </dependency>-->
+
+        <dependency>
+            <groupId>nz.net.ultraq.thymeleaf</groupId>
+            <artifactId>thymeleaf-layout-dialect</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -215,6 +215,7 @@
         <module>lesson2</module>
         <module>lesson3</module>
         <module>lesson4</module>
+        <module>lesson5</module>
 	</modules>
 
 </project>

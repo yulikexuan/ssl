@@ -31,6 +31,13 @@ public class User {
     @NotEmpty(message = "Email is required.")
     private String email;
 
+    @NotEmpty(message = "Password is required.")
+    private String password;
+
+//    @Transient
+//    @NotEmpty(message = "Password confirmation is required.")
+//    private String passwordConfirmation;
+
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;

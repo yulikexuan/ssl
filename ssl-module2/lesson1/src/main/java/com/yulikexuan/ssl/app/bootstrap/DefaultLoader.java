@@ -29,27 +29,33 @@ public class DefaultLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        String pw = "123456";
+
         this.userRepository.save(User.builder()
                 .username("Bill Gates")
                 .email("billgates@microsoft.com")
+                .password(pw)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
         this.userRepository.save(User.builder()
                 .username("Steve Jobs")
                 .email("stevejobs@apple.com")
+                .password(pw)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
         this.userRepository.save(User.builder()
                 .username("Donald Trump")
                 .email("donaldtrump@usa.com")
+                .password(pw)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
         this.userRepository.save(User.builder()
                 .username("Mike Pence")
                 .email("mikepence@usa.com")
+                .password(pw)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 

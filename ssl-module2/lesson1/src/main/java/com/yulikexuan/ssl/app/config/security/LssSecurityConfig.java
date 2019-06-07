@@ -78,6 +78,8 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 // .hasAnyRole("ADMIN", "ADMIN2");
                 // .hasAnyAuthority("ROLE_ADMIN", "ROLE_ADMIN2");
                 .hasAuthority("ROLE_ADMIN")
+                .antMatchers("/signup", "/user/register")
+                .permitAll()
                 .anyRequest()
                 .authenticated()
             .and()

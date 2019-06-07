@@ -1,0 +1,24 @@
+//: com.yulikexuan.ssl.app.mapper.IUserMapper.java
+
+
+package com.yulikexuan.ssl.app.mapper;
+
+
+import com.yulikexuan.ssl.app.model.UserDto;
+import com.yulikexuan.ssl.domain.model.User;
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
+
+
+@Component
+@Mapper(uses = DateMapper.class, componentModel = "default")
+public interface IUserMapper {
+
+    IUserMapper INSTANCE = Mappers.getMapper(IUserMapper.class);
+
+    UserDto userToUserDto(User user);
+
+    User userDtoToUser(UserDto userDto);
+
+}///:~

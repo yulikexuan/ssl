@@ -9,9 +9,9 @@
         Set up OAuth2 with Spring Security
     </description>
     
-    <name>lesson-1</name>
+    <name>lesson-2</name>
 
-    <artifactId>lesson1</artifactId>
+    <artifactId>lesson2</artifactId>
     <packaging>jar</packaging>
 
     <parent>

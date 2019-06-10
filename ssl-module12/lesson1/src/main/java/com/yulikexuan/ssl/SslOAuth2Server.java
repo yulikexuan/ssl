@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class SslApp {
+public class SslOAuth2Server {
 
     public static void main(String[] args) {
-        SpringApplication.run(SslApp.class, args);
+        SpringApplication.run(SslOAuth2Server.class, args);
     }
 
 }///:~

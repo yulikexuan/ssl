@@ -1,0 +1,5 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  servlet:
+    context-path: /resources
+  port: 8082

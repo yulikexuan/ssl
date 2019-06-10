@@ -2,4 +2,4 @@
 server:
   servlet:
     context-path: /resources
-  port: 8082
+  port: 8083

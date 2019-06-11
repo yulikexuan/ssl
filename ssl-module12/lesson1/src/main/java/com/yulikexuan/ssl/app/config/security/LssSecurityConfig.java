@@ -60,8 +60,8 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().
-                csrf()
+                .and()
+                .csrf()
                 .disable();
     }
 

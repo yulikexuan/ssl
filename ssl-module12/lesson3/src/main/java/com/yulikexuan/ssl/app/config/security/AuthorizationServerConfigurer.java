@@ -24,6 +24,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import java.security.KeyPair;
+
 
 @Slf4j
 @Configuration
@@ -34,16 +36,18 @@ public class AuthorizationServerConfigurer
     @Value("${signing-key:oui214hmui23o4hm1pui3o2hp4m1o3h2m1o43}")
     private String signingKey;
 
+    private final KeyPair keyPair;
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
 
     @Autowired
-    public AuthorizationServerConfigurer(
+    public AuthorizationServerConfigurer(KeyPair keyPair,
             AuthenticationManager authenticationManager,
             UserDetailsService userDetailsService) {
 
         super();
 
+        this.keyPair = keyPair;
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }

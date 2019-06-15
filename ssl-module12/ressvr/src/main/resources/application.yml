@@ -1,0 +1,7 @@
+server:
+  port: 8089
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: oui214hmui23o4hm1pui3o2hp4m1o3h2m1o43

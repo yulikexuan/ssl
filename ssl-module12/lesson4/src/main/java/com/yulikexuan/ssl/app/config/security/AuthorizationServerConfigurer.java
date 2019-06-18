@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.token.DefaultToken;
@@ -23,6 +24,7 @@ import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import java.security.KeyPair;
 
@@ -32,9 +34,6 @@ import java.security.KeyPair;
 @EnableAuthorizationServer
 public class AuthorizationServerConfigurer
         extends AuthorizationServerConfigurerAdapter {
-
-    @Value("${signing-key:oui214hmui23o4hm1pui3o2hp4m1o3h2m1o43}")
-    private String signingKey;
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
@@ -49,6 +48,13 @@ public class AuthorizationServerConfigurer
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
     }
+    
+    @Bean
+    public KeyPair keypair() {
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
+                new ClassPathResource("mytest.jks"), "mypass".toCharArray());
+        return keyStoreKeyFactory.getKeyPair("mytest");
+    }
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
@@ -56,7 +62,7 @@ public class AuthorizationServerConfigurer
         final JwtAccessTokenConverter jwtAccessTokenConverter =
                 new JwtAccessTokenConverter();
 
-        jwtAccessTokenConverter.setSigningKey(signingKey);
+        jwtAccessTokenConverter.setKeyPair(this.keypair());
 
         return jwtAccessTokenConverter;
     }
@@ -92,8 +98,7 @@ public class AuthorizationServerConfigurer
     }
 
     @Override
-    public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-            throws Exception {
+    public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
 
         endpoints.tokenStore(tokenStore())
                 .authenticationManager(this.authenticationManager)
@@ -105,7 +110,6 @@ public class AuthorizationServerConfigurer
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         security.checkTokenAccess("permitAll()");
-        security.tokenKeyAccess("permitAll");
         super.configure(security);
     }
 

@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.SslOAuth2JwtRefreshableServer.java
+//: com.yulikexuan.ssl.SslOAuth2JwkServer.java
 
 
 package com.yulikexuan.ssl;
@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class SslOAuth2JwtRefreshableServer {
+public class SslOAuth2JwkServer {
 
     public static void main(String[] args) {
-        SpringApplication.run(SslOAuth2JwtRefreshableServer.class, args);
+        SpringApplication.run(SslOAuth2JwkServer.class, args);
     }
 
 }///:~

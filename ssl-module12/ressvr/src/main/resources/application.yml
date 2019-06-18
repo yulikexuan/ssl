@@ -5,3 +5,4 @@ security:
     resource:
       jwt:
         key-value: oui214hmui23o4hm1pui3o2hp4m1o3h2m1o43
+        # key-uri: http://localhost:8083/resources/oauth/check_token

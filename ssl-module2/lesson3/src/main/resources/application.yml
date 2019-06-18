@@ -1,0 +1,10 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  port: 8083
+spring:
+  thymeleaf:
+    cache: false
+  tomcat:
+    accesslog:
+      enabled: true
+    basedir: target/tomcat

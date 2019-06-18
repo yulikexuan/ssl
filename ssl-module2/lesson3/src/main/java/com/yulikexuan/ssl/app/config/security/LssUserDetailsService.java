@@ -46,7 +46,6 @@ public class LssUserDetailsService implements UserDetailsService {
                 .password(lssUser.getPassword())
                 .accountExpired(false)
                 .accountLocked(false)
-                .disabled(!lssUser.getEnabled())
                 .credentialsExpired(false)
                 .authorities(new SimpleGrantedAuthority(ROLE_USER))
                 .build();

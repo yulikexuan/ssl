@@ -49,7 +49,6 @@ public class RegistrationController {
         }
 
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        user.setEnabled(false);
 
         this.userService.saveUser(
                 userMapper.userDtoToUser(user));

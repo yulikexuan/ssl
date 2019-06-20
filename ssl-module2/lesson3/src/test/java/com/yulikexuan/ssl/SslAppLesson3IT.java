@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.SslAppIT.java
+//: com.yulikexuan.ssl.SslAppLesson3IT.java
 
 
 package com.yulikexuan.ssl;
@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 
 @SpringBootTest
-class SslAppIT {
+class SslAppLesson3IT {
 
     @BeforeEach
     void setUp() {

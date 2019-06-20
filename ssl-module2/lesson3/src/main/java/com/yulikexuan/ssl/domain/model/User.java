@@ -31,7 +31,11 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Column
     private String password;
+
+    @Column
+    private Boolean enabled;
 
     @CreationTimestamp
     @Column(updatable = false)

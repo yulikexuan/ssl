@@ -42,6 +42,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .username("yul")
                 .email("yul@tecsys.com")
                 .password(pw)
+                .enabled(true)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
@@ -49,6 +50,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .username("Bill Gates")
                 .email("billgates@microsoft.com")
                 .password(pw)
+                .enabled(true)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
@@ -56,6 +58,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .username("Steve Jobs")
                 .email("stevejobs@apple.com")
                 .password(pw)
+                .enabled(true)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
@@ -63,6 +66,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .username("Donald Trump")
                 .email("donaldtrump@usa.com")
                 .password(pw)
+                .enabled(true)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 
@@ -70,6 +74,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .username("Mike Pence")
                 .email("mikepence@usa.com")
                 .password(pw)
+                .enabled(true)
                 .created(Timestamp.from(Instant.now()))
                 .build());
 

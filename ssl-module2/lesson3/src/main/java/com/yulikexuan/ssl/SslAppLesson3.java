@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.SslApp.java
+//: com.yulikexuan.ssl.SslAppLesson3.java
 
 
 package com.yulikexuan.ssl;
@@ -9,10 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
 @SpringBootApplication
-public class SslApp {
+public class SslAppLesson3 {
 
     public static void main(String[] args) {
-        SpringApplication.run(SslApp.class, args);
+        SpringApplication.run(SslAppLesson3.class, args);
     }
 
 }///:~

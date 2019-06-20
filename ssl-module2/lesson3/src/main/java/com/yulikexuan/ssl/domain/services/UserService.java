@@ -8,12 +8,14 @@ import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.repositories.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import javax.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 
 @Service
+@Transactional
 public class UserService implements IUserService {
 
     private final IUserRepository userRepository;
@@ -35,9 +37,13 @@ public class UserService implements IUserService {
 
     @Override
     public User saveUser(User user) {
-        User savedUser = Optional.ofNullable(user)
-                .map(this.userRepository::save)
-                .orElseThrow(RuntimeException::new);
+
+        if (user == null) {
+            throw new RuntimeException("User to be saved is null!");
+        }
+
+        User savedUser = this.userRepository.save(user);
+
         return savedUser;
     }
 

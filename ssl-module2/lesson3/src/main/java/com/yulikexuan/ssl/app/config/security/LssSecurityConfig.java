@@ -98,7 +98,7 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 // .hasAnyRole("ADMIN", "ADMIN2");
                 // .hasAnyAuthority("ROLE_ADMIN", "ROLE_ADMIN2");
                 .hasAuthority("ROLE_ADMIN")
-                .antMatchers("/signup", "/user/register")
+                .antMatchers("/signup", "/user/register", "/registrationConfirm*/**", "/h2-console/*/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -114,9 +114,14 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/quit", "GET"))// POST is the better
                 .clearAuthentication(true)// Default action
                 .invalidateHttpSession(true)// Default
+            .and() // Disable X-Frame-Options in Spring Security
+                .headers() // So we can user the console of h2 database
+                .frameOptions()
+                .disable()
             .and()
                 .csrf()
                 .disable();
+
             /*
              * Adding CSRF will update the LogoutFilter to only use HTTP POST
              * This ensures that log out requires a CSRF token and that a

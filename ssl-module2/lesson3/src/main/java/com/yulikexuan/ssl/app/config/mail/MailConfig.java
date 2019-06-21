@@ -12,7 +12,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import java.util.Properties;
 
 
-@Configuration
+//@Configuration // Use application.yml instead
 public class MailConfig {
 
     @Bean

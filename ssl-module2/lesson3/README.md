@@ -149,5 +149,36 @@
 
 ### How to set up 
 
-    1. Read: [Guide to Spring Email](https://www.baeldung.com/spring-email/)
-    2. Read: [Set up h2 console with spring security] (https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
+0.  Add maven dependency for mail
+
+    ``` 
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-mail</artifactId>
+    </dependency>
+    ```
+
+1.  Create domain model for VerificationToken
+
+2.  Create one to one relationship between User and VerificationToken
+
+3.  Create repository and service for VerificationToken
+
+4.  Add "enabled", a boolean field, to User model
+
+5.  Apply new "enabled" property in LssUserDetailsService
+
+6.  Add new features to RegistrationController
+
+    - Set "enabled" to be false for new registering user in RegistrationController
+    - Create new VerificationToken for new register user
+        * Token String
+        * Application URI
+        * Save new VerificationToken 
+        * Send email to user (User email and event components of Spring framework)
+    - Create new handler method to confirm the registration
+
+#### Resources:
+    1. [Guide to Spring Email](https://www.baeldung.com/spring-email/)
+    2. [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
+    3. [Spring Events](https://www.baeldung.com/spring-events)

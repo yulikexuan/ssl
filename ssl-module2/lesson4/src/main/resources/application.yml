@@ -1,0 +1,25 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  port: 8084
+spring:
+  thymeleaf:
+    cache: false
+  tomcat:
+    accesslog:
+      enabled: true
+    basedir: target/tomcat
+  h2:
+    console:
+      enabled: true
+      path: "/h2-console"
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yulikexuan@gmail.com
+    password: ${EMAIL_KEY}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

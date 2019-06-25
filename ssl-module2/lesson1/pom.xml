@@ -10,7 +10,6 @@
     </description>
     <name>lesson-1</name>
 
-    <groupId>com.yulikexuan.ssl.m1</groupId>
     <artifactId>lesson1</artifactId>
     <packaging>jar</packaging>
 

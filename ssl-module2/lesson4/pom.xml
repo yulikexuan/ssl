@@ -6,12 +6,9 @@
     <modelVersion>4.0.0</modelVersion>
     
     <description>
-        Activate a new account via Email
+        Reset forgotton passoword
     </description>
-    <name>lesson-3</name>
-
-    <artifactId>lesson3</artifactId>
-    <packaging>jar</packaging>
+    <name>lesson-4</name>
 
     <parent>
         <groupId>com.yulikexuan.ssl</groupId>
@@ -19,6 +16,9 @@
         <version>201902</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
+    
+    <artifactId>lesson4</artifactId>
+    <packaging>jar</packaging>
 
     <dependencies>
 

@@ -19,6 +19,10 @@ import com.yulikexuan.ssl.domain.services.IVerificationTokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -42,6 +46,7 @@ import java.util.UUID;
 public class RegistrationController {
 
     private final IUserService userService;
+    private final UserDetailsService userDetailsService;
     private final IVerificationTokenService verificationTokenService;
     private final IPasswordResetTokenService passwordResetTokenService;
     private final ApplicationEventPublisher eventPublisher;
@@ -52,12 +57,14 @@ public class RegistrationController {
     @Autowired
     public RegistrationController(
             IUserService userService,
+            UserDetailsService userDetailsService,
             IVerificationTokenService verificationTokenService,
             IPasswordResetTokenService passwordResetTokenService,
             PasswordEncoder passwordEncoder,
             ApplicationEventPublisher eventPublisher) {
 
         this.userService = userService;
+        this.userDetailsService = userDetailsService;
         this.verificationTokenService = verificationTokenService;
         this.passwordResetTokenService = passwordResetTokenService;
         this.eventPublisher = eventPublisher;
@@ -180,7 +187,7 @@ public class RegistrationController {
                 .host(request.getServerName())
                 .port(request.getServerPort())
                 .path(request.getContextPath())
-                .path("/changePassword")
+                .path("/user/changePassword")
                 .queryParam("token", token)
                 .build()
                 .toUriString();
@@ -194,6 +201,32 @@ public class RegistrationController {
 
         eventPublisher.publishEvent(
                 new ResetPasswordEvent(prToken, appUri));
+    }
+
+    @GetMapping("/user/changePassword")
+    public ModelAndView showChangePasswordPage(
+            @RequestParam("token") final String token,
+            final RedirectAttributes redirectAttributes) {
+
+        ModelAndView modelAndView =
+                this.passwordResetTokenService.findByToken(token)
+                .map(PasswordResetToken::getUser)
+                .map(user -> {
+                    Authentication auth = new UsernamePasswordAuthenticationToken(
+                            user, null,
+                            userDetailsService.loadUserByUsername(
+                                    user.getUsername()).getAuthorities());
+                    SecurityContextHolder.getContext().setAuthentication(auth);
+                    return new ModelAndView("resetPassword");
+                })
+                .orElseGet(() -> {
+                    redirectAttributes.addFlashAttribute(
+                            "errorMessage",
+                            "Invalid password reset token");
+                    return new ModelAndView("redirect:/login");
+                });
+
+        return modelAndView;
     }
 
 }///:~

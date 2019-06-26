@@ -178,7 +178,19 @@
         * Send email to user (User email and event components of Spring framework)
     - Create new handler method to confirm the registration
 
-#### Resources:
-    1. [Guide to Spring Email](https://www.baeldung.com/spring-email/)
-    2. [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
-    3. [Spring Events](https://www.baeldung.com/spring-events)
+## Send password-reset email   
+
+### How to set up 
+
+0 . It's similar as how to set up account activatation 
+
+1.  One thing different is before saving new password, we need to authenticate
+    the user manually
+    
+    
+#### Resources:  
+- [Guide to Spring Email](https://www.baeldung.com/spring-email)
+- [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
+- [Spring Events](https://www.baeldung.com/spring-events)
+- [Manually Authenticate User with Spring Security](https://www.baeldung.com/manually-set-user-authentication-spring-security)
+- [Immutable Map Implementations in Java with Guava](https://www.baeldung.com/java-immutable-maps)

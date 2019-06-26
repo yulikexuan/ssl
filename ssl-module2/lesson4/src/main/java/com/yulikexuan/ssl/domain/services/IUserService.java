@@ -24,4 +24,6 @@ public interface IUserService {
 
     void deleteUser(Long id);
 
+    void changeUserPassword(final User user, String password);
+
 }///:~

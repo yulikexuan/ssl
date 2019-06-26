@@ -4,6 +4,7 @@
 package com.yulikexuan.ssl.app.controllers;
 
 
+import com.google.common.collect.ImmutableMap;
 import com.yulikexuan.ssl.app.events.OnRegistrationCompleteEvent;
 import com.yulikexuan.ssl.app.events.ResetPasswordEvent;
 import com.yulikexuan.ssl.app.mapper.IUserMapper;
@@ -11,7 +12,6 @@ import com.yulikexuan.ssl.app.model.UserDto;
 import com.yulikexuan.ssl.domain.model.PasswordResetToken;
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.model.VerificationToken;
-import com.yulikexuan.ssl.domain.repositories.IPasswordResetTokenRepository;
 import com.yulikexuan.ssl.domain.services.EmailExistsException;
 import com.yulikexuan.ssl.domain.services.IPasswordResetTokenService;
 import com.yulikexuan.ssl.domain.services.IUserService;
@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -28,16 +29,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Collection;
+import java.util.Optional;
 import java.util.UUID;
 
 
@@ -161,6 +161,7 @@ public class RegistrationController {
         return new ModelAndView("redirect:/login");
     }
 
+    // Send email with token for resetting new password
     @PostMapping(value = "/user/resetPassword")
     public ModelAndView resetPassword(
             final HttpServletRequest request,
@@ -203,21 +204,54 @@ public class RegistrationController {
                 new ResetPasswordEvent(prToken, appUri));
     }
 
+    /*
+     * To see password change form after clicking token link in email
+     *
+     * The SecurityContext is used to store the details of the currently
+     * authenticated user, also known as a principle
+     *
+     * The SecurityContextHolder is a helper class, which provide access to the
+     * security context
+     * By default, it uses a ThreadLocal object to store security context,
+     * which means that the security context is always available to methods in
+     * the same thread of execution, even if you don't pass the SecurityContext
+     * object around
+     * Don't worry about the ThreadLocal memory leak in web application though,
+     * Spring Security takes care of cleaning ThreadLocal
+     *
+     * How to programmatically set an authenticated user
+     * Simply put, Spring Security hold the principal information of each
+     * authenticated user in a ThreadLocal – represented as an Authentication
+     * object
+     *
+     */
     @GetMapping("/user/changePassword")
     public ModelAndView showChangePasswordPage(
             @RequestParam("token") final String token,
-            final RedirectAttributes redirectAttributes) {
+            final RedirectAttributes redirectAttributes,
+            Authentication authentication) {
+
+        log.info(">>>>>>> Current username of showing change password thread: {}",
+                Optional.ofNullable(authentication).map(Authentication::getName)
+                        .orElse("N/A"));
 
         ModelAndView modelAndView =
                 this.passwordResetTokenService.findByToken(token)
                 .map(PasswordResetToken::getUser)
                 .map(user -> {
-                    Authentication auth = new UsernamePasswordAuthenticationToken(
-                            user, null,
+                    Collection<? extends GrantedAuthority> authorities =
                             userDetailsService.loadUserByUsername(
-                                    user.getUsername()).getAuthorities());
+                                    user.getUsername()).getAuthorities();
+                    Authentication auth =
+                            new UsernamePasswordAuthenticationToken(
+                                    user, null, authorities);
+                    // Authentication auth = this.authenticationManager
+                    //         .authenticate(authenticationToken);
+                    // Needless as no password in auth
+
+                    // Set the pdrincipal for the context of the next operation
                     SecurityContextHolder.getContext().setAuthentication(auth);
-                    return new ModelAndView("resetPassword");
+                    return new ModelAndView("resetPasswordFormPage");
                 })
                 .orElseGet(() -> {
                     redirectAttributes.addFlashAttribute(
@@ -227,6 +261,36 @@ public class RegistrationController {
                 });
 
         return modelAndView;
+
+    }// End of showChangePasswordPage
+
+    @PostMapping("/user/saveNewPassword")
+    @ResponseBody
+    public ModelAndView saveNewPassword(
+            @RequestParam("password") final String password,
+            @RequestParam("passwordConfirmation") final String passwordConfirmation,
+            final RedirectAttributes redirectAttributes) {
+
+        if (!password.equals(passwordConfirmation)) {
+            return new ModelAndView(
+                    "resetPasswordFormPage",
+                    ImmutableMap.of("errorMessage",
+                            "Passwords do not match!"));
+        }
+
+        final User user = (User) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        String encodedPassword = this.passwordEncoder.encode(password);
+
+        this.userService.changeUserPassword(user, encodedPassword);
+
+        redirectAttributes.addFlashAttribute("message",
+                "Password reset successfully!");
+
+        return new ModelAndView("redirect:/login");
     }
 
 }///:~

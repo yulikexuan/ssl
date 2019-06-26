@@ -64,6 +64,12 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public void changeUserPassword(final User user, String password) {
+        user.setPassword(password);
+        this.userRepository.save(user);
+    }
+
+    @Override
     public Optional<User> findUserByEmail(String email) {
         return this.userRepository.findByEmail(email).stream().findAny();
     }

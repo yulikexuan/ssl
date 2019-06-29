@@ -33,6 +33,10 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
         this.userDetailsService = userDetailsService;
     }
 
+    /*
+     * Override this method to expose the AuthenticationManager from
+     * configure(AuthenticationManagerBuilder) to be exposed as a Bean
+     */
     @Bean
     @Override
     public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -52,32 +56,15 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
      *   - Bean property setter methods are effectively just a special case of
      *     such a general config method
      *   - Such config methods do not have to be public
+     *
+     * Autowired AuthenticationManagerBuilder instance is from
+     * AuthenticationConfiguration which exports the authentication Configuration
      */
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authManagerBuilder)
             throws Exception {
 
-        // @formatter:off
-
-        /* Module 1:
-         * 1.  Disable the basic authentication
-         * 2.  Replace with form authentication configuration
-         * 3.  Spring will auto-generate a form for authentication
-         * 4.  Add password storage format, for plain text, add {noop}
-         *     - Prior to Spring Security 5.0 the default PasswordEncoder was
-         *       NoOpPasswordEncoder which required plain text passwords
-         *     - In Spring Security 5, the default is DelegatingPasswordEncoder,
-         *       which required Password Storage Format
-         */
-//        authManagerBuilder.inMemoryAuthentication()
-//                .withUser("yul")
-//                .password("{noop}123456")
-//                .roles("USER");
-
-
-        /*
-         * Module 2:
-         */
+        // Module 2:
         authManagerBuilder.userDetailsService(this.userDetailsService);
 
     } // @formatter:on
@@ -85,7 +72,8 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
     /*
      * The default configuration is:
      *   http.authorizeRequests() //Allows restricting access based upon the HttpServletRequest using
-     *       .anyRequest().authenticated()
+     *       .anyRequest()
+     *       .authenticated()
      *       .and()
      *       .formLogin() //Specifies to support form based authentication.
      *                    // If FormLoginConfigurer.loginPage(String) is not
@@ -116,15 +104,15 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
             .and()
                 .formLogin()
                 .loginPage("/login") // Specifies the URL to send users to if login is required
-                .permitAll()
                 .loginProcessingUrl("/whoareyou") // Specifies the URL to validate the credentials
+                .permitAll() // Ensures the urls for the getLoginPage() and getLoginProcessingUrl() are granted access to any user.
             .and()
                 .logout()
                 .permitAll()
                 .logoutRequestMatcher(new AntPathRequestMatcher(
                         "/quit", "GET"))// POST is the better
                 .clearAuthentication(true)// Default action
-                .invalidateHttpSession(true)// Default
+                .invalidateHttpSession(true)// Default action
             .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database
                 .frameOptions()

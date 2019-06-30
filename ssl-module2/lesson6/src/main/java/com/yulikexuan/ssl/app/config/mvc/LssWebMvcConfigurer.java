@@ -22,7 +22,7 @@ public class LssWebMvcConfigurer implements WebMvcConfigurer {
 
     /*
      * "classpath:" is specific to spring
-     *   - Spring's resource resolving mechanism
+     *   - Sp   ring's resource resolving mechanism
      *     (ie. PathMatchingResourcePatternResolver or other imlementations)
      *     knows about the "classpath:" and "classpath*:" prefixes
      *

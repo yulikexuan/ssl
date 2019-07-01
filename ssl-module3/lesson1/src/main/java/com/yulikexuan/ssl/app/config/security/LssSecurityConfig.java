@@ -123,6 +123,11 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)// Default action
             .and()
                 .rememberMe()
+                .tokenValiditySeconds(7 * 24 * 3600)
+                .key("lssappkey")
+                // .useSecureCookie(true)
+                .rememberMeCookieName("sticky-cookie")
+                .rememberMeParameter("sticky") // Used to name the check-box on login page
             .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database
                 .frameOptions()

@@ -17,8 +17,12 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.rememberme.InMemoryTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -34,6 +38,9 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
+
+    @Autowired
+    private DataSource dataSource;
 
     @Autowired
     public LssSecurityConfig(UserDetailsService userDetailsService) {
@@ -123,11 +130,8 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 .invalidateHttpSession(true)// Default action
             .and()
                 .rememberMe()
-                .tokenValiditySeconds(7 * 24 * 3600)
-                .key("lssappkey")
+                .tokenRepository(this.getTokenRepository())
                 // .useSecureCookie(true)
-                .rememberMeCookieName("sticky-cookie")
-                .rememberMeParameter("sticky") // Used to name the check-box on login page
             .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database
                 .frameOptions()
@@ -145,5 +149,13 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
              */
 
     }// @formatter:off
+
+    @Bean
+    public PersistentTokenRepository getTokenRepository() {
+        log.info(">>>>>>> Data Source {}", this.dataSource);
+        JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();
+        jdbcTokenRepository.setDataSource(this.dataSource);
+        return jdbcTokenRepository;
+    }
 
 }///:~

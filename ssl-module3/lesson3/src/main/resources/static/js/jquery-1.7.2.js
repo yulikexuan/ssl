@@ -2017,7 +2017,7 @@ function isEmptyDataObject( obj ) {
   for ( var name in obj ) {
 
     // if the public data object is empty, the private is still empty
-    if ( name === "data" && jQuery.isEmptyObject( obj[name] ) ) {
+    if ( name === "data.sql.bak" && jQuery.isEmptyObject( obj[name] ) ) {
       continue;
     }
     if ( name !== "toJSON" ) {

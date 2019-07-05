@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -40,6 +41,7 @@ public class DefaultLoader implements CommandLineRunner {
         this.secuQuestionDefRepository = secuQuestionDefRepository;
     }
 
+    @Transactional
     @Override
     public void run(String... args) throws Exception {
         loadSecurityQuestionDefinitions();
@@ -52,6 +54,14 @@ public class DefaultLoader implements CommandLineRunner {
                 LssSecurityConfig.DEFAULT_SIMPLE_PW);
         Long questionId = 5L;
         String securityQuestionAnswer = "Zhengzhou";
+
+        this.userService.saveUser(User.builder()
+                .username("admin")
+                .email("yulikexuan@gmail.com")
+                .password(pw)
+                .enabled(true)
+                .created(Timestamp.from(Instant.now()))
+                .build(), questionId, securityQuestionAnswer);
 
         this.userService.saveUser(User.builder()
                 .username("yul")

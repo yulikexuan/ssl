@@ -98,13 +98,49 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
                 Arrays.stream(permitUrls).collect(Collectors.joining(", ")));
 
         // Always authorize urls before authenticating request
+        // User roles are setup in LssUserDetailsService class !
         http
             .authorizeRequests()
                 .antMatchers("/delete/**")
                 // .hasRole("ADMIN") // "ROLE_" prefix will be auto-inserted
                 // .hasAnyRole("ADMIN", "ADMIN2");
                 // .hasAnyAuthority("ROLE_ADMIN", "ROLE_ADMIN2");
-                .hasAuthority("ROLE_ADMIN")
+                .hasAuthority("ROLE_ADMIN") // "ROLE_" prefix is required here
+
+                //: URL Authorization with Expressions
+                .antMatchers("/secured*")
+                /*
+                 * Allows specifying that URLs are secured by an arbitrary
+                 * expression
+                 * The expression to secure the URLs (i.e. "hasRole('ROLE_USER')
+                 * and hasRole('ROLE_SUPER')")
+                 */
+                // .access("hasRole('ADMIN')") // "ROLE_" prefix is not required here
+                // .access("hasAuthority('ROLE_ADMIN')") // "ROLE_" prefix is required here
+                // .hasIpAddress("192.168.1.79/24")
+                /*
+                 * This is because ping on Windows Vista and newer Windows uses
+                 * IPv6 by default when available.
+                 * ::1 is a shortened notation of IPv6 loopback address
+                 *   - equivalent of IPv4 loopback 127.0.0.1.
+                 *
+                 * The full notation of the abbreviated ::1 IPv6 address is
+                 * 0000:0000:0000:0000:0000:0000:0000:0001.
+                 *
+                 * If you want to force ping to use IPv4 instead you can specify
+                 * the IPv4 address explicitly or use the -4 option.
+                 * ping 127.0.0.1
+                 * ping -4 localhost
+                 */
+                // .not().access("hasIpAddress('::1')")
+                // .anonymous()
+                // .access("isAnonymous()")
+                // .access("request.method == 'GET'")
+                //.access("request.method != 'POST'")
+                // .access("hasRole('ROLE_USER') and principal.username =='yul'")
+                .access("hasRole('ROLE_ADMIN') or principal.username =='yul'")
+                //: End of Authorization Expression
+
                 .antMatchers(permitUrls)
                 .permitAll()
                 .anyRequest()

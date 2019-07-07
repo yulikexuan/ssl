@@ -178,6 +178,7 @@
         * Send email to user (User email and event components of Spring framework)
     - Create new handler method to confirm the registration
 
+
 ## Send password-reset email   
 
 ### How to set up 
@@ -297,7 +298,55 @@
         }
         ```
 
+## Introduction to Storing Passwords
 
+### How passwords are actually compromised
+
+1.  Passive Attacks (被动攻击)
+
+    - These are still online attacks but have no interaction with the user, or their user account
+        - Wire Sniffing
+        - Typical man in the middle attacks
+        - A wide range of replay attacks
+        
+2.  Active online attack
+
+    - The attacker interacts with the useraccount through the standard authentication channels
+    - Go through the site, or any other channel that the user typically uses to authenticate and try to guess the password
+
+3.   **Offline Attack**:
+     **The most damaging and also the most common type of attack**
+     
+     - The attacker gets access to the database of the system
+     - Uses offline methods and offline heuristics to crack the passwords
+         * Brute force attacks
+         * Dictionary attacks
+         * Hybrid, sealable, rule­based attacks
+         * Pre­compute hashes, rainbow attacks
+     - The problem with offline attacks is that they require a data breach
+       They require the attacker to get a hold of your systems database
+       - **Breach: 突破口 an action that breaks an agreement to behave in a particular way**
+
+4.   Non­technical attack
+
+
+### Lay the groundwork for safe password storage practices to Mitigate password Attacks
+
+1.  The assumption here is that the first line of defense has failed, and the data of the system got compromised
+
+2.  If the security at one level fails, that doesn't mean that the attacker should now have access to everything
+    - So if one layer of security fails, then we have another layer and another layer to take its place and make sure that the data of our users does not get compromised.
+    - Never going to actually store the raw password.Storing the raw plain text password is just asking for trouble
+    - Hash the password: apply a one­way hash function to the password using of salts
+    - Throw away the password
+    
+3.  Validate Password:
+    - Take the password from the user
+    - Apply the same one­way hash function plus the salt to that password 
+    - Compare that value to the value that we have stored in our database
+
+4.  The complex part and the important part is just a matter of 
+    **Choosing the one­way hash function and the salt**
 
 #### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)

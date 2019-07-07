@@ -35,6 +35,12 @@ public class SslSecurityExpressionOperation extends SecurityExpressionRoot
                 .orElse(false);
     }
 
+    public boolean isUser() {
+        return Optional.ofNullable(this.getPrincipal())
+                .map(this::isUserHasUserRole)
+                .orElse(false);
+    }
+
     private boolean isUserHasAdminRole(Object o) {
 
         if ((o == null) || !(o instanceof User)) {
@@ -44,6 +50,17 @@ public class SslSecurityExpressionOperation extends SecurityExpressionRoot
         final User user = (User)o;
         return user.getAuthorities().contains(
                 new SimpleGrantedAuthority("ROLE_ADMIN"));
+    }
+
+    private boolean isUserHasUserRole(Object o) {
+
+        if ((o == null) || !(o instanceof User)) {
+            return false;
+        }
+
+        final User user = (User)o;
+        return user.getAuthorities().contains(
+                new SimpleGrantedAuthority("ROLE_USER"));
     }
 
 

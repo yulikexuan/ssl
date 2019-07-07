@@ -22,11 +22,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 /*
- * This configuration class is for lesson 2 of Module 5
+ * This configuration class is only for lesson 2 to 4 of Module 5
  */
 @Slf4j
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SslLesson4SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;

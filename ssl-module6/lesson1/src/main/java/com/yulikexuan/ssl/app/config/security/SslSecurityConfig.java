@@ -25,11 +25,11 @@ import java.util.stream.Collectors;
 
 
 /*
- * This configuration class is generic for all lessons except Lesson 2 of Module 5
+ * This configuration class is generic for all lessons except Lesson 2 to 4 of Module 5
  */
 @Slf4j
-//@Configuration
-//@EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String DEFAULT_SIMPLE_PW = "123456";

@@ -44,7 +44,6 @@ public class UserController {
         this.userListMapper = IUserListMapper.INSTANCE;
     }
 
-    @PreAuthorize("isAdmin()")
     @GetMapping
     public ModelAndView list() {
 
@@ -65,7 +64,8 @@ public class UserController {
 
     // @PreAuthorize("isAuthenticated()")
     // @PreAuthorize("principal.username=='yul'")
-    @Secured("ROLE_ADMIN") // Secured annotation does not support expression
+    // @Secured("ROLE_ADMIN") // Secured annotation does not support expression
+    @PreAuthorize("isAdmin()")
     @RequestMapping(params = "form", method = RequestMethod.GET)
     public String createForm(@ModelAttribute(value="user") UserDto user) {
         user.setId(-1L);

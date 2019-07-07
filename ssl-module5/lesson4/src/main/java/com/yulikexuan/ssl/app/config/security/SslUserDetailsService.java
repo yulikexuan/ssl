@@ -21,7 +21,7 @@ import java.util.List;
 
 @Primary
 @Service
-public class LssUserDetailsService implements UserDetailsService {
+public class SslUserDetailsService implements UserDetailsService {
 
     static final String ROLE_USER = "ROLE_USER";
     static final String ROLE_ADMIN = "ROLE_ADMIN";
@@ -37,7 +37,7 @@ public class LssUserDetailsService implements UserDetailsService {
     private final IUserService userService;
 
     @Autowired
-    public LssUserDetailsService(IUserService userService) {
+    public SslUserDetailsService(IUserService userService) {
         this.userService = userService;
     }
 
@@ -46,7 +46,7 @@ public class LssUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         return this.userService.findUserByUsername(username)
-                .map(LssUserDetailsService::userToUserDetails)
+                .map(SslUserDetailsService::userToUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "No user found with username: " + username));
     }

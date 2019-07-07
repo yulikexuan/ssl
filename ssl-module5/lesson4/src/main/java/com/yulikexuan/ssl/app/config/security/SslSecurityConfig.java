@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.app.config.security.LssSecurityConfig.java
+//: com.yulikexuan.ssl.app.config.security.SslSecurityConfig.java
 
 
 package com.yulikexuan.ssl.app.config.security;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Slf4j
 //@Configuration
 //@EnableWebSecurity
-public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
 
     public static final String DEFAULT_SIMPLE_PW = "123456";
 
@@ -40,7 +40,7 @@ public class LssSecurityConfig extends WebSecurityConfigurerAdapter {
     private String[] permitUrls;
 
     @Autowired
-    public LssSecurityConfig(UserDetailsService userDetailsService) {
+    public SslSecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 

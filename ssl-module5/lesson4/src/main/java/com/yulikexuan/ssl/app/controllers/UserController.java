@@ -4,20 +4,18 @@
 package com.yulikexuan.ssl.app.controllers;
 
 
-import com.yulikexuan.ssl.app.config.security.LssSecurityConfig;
+import com.yulikexuan.ssl.app.config.security.SslSecurityConfig;
 import com.yulikexuan.ssl.app.mapper.IUserListMapper;
 import com.yulikexuan.ssl.app.mapper.IUserMapper;
 import com.yulikexuan.ssl.app.model.UserDto;
 import com.yulikexuan.ssl.app.model.UserListDto;
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.services.IUserService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -46,6 +44,7 @@ public class UserController {
         this.userListMapper = IUserListMapper.INSTANCE;
     }
 
+    @PreAuthorize("isAdmin()")
     @GetMapping
     public ModelAndView list() {
 
@@ -81,7 +80,7 @@ public class UserController {
                     "formErrors", result.getAllErrors());
         }
         userDto.setPassword(this.passwordEncoder.encode(
-                LssSecurityConfig.DEFAULT_SIMPLE_PW));
+                SslSecurityConfig.DEFAULT_SIMPLE_PW));
         User savedUser = this.userService.saveUser(
                 userMapper.userDtoToUser(userDto));
         userDto.setId(savedUser.getId());

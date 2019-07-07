@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.app.config.security.LssOnMethodSecurityConfig.java
+//: com.yulikexuan.ssl.app.config.security.SslLesson4SecurityConfig.java
 
 
 package com.yulikexuan.ssl.app.config.security;
@@ -27,9 +27,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Slf4j
 @Configuration
 @EnableWebSecurity
-// prePostEnabled is REQUIRED!
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class LssOnMethodSecurityConfig extends WebSecurityConfigurerAdapter {
+public class SslLesson4SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
 
@@ -37,7 +35,7 @@ public class LssOnMethodSecurityConfig extends WebSecurityConfigurerAdapter {
     private String[] permitUrls;
 
     @Autowired
-    public LssOnMethodSecurityConfig(UserDetailsService userDetailsService) {
+    public SslLesson4SecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
     }
 

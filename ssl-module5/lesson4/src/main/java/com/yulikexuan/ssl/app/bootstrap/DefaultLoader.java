@@ -4,11 +4,10 @@
 package com.yulikexuan.ssl.app.bootstrap;
 
 
-import com.yulikexuan.ssl.app.config.security.LssSecurityConfig;
+import com.yulikexuan.ssl.app.config.security.SslSecurityConfig;
 import com.yulikexuan.ssl.domain.model.SecurityQuestionDefinition;
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.repositories.ISecurityQuestionDefinitionRepository;
-import com.yulikexuan.ssl.domain.repositories.IUserRepository;
 import com.yulikexuan.ssl.domain.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,7 +50,7 @@ public class DefaultLoader implements CommandLineRunner {
     private void loadUsers() {
 
         String pw = this.passwordEncoder.encode(
-                LssSecurityConfig.DEFAULT_SIMPLE_PW);
+                SslSecurityConfig.DEFAULT_SIMPLE_PW);
         Long questionId = 5L;
         String securityQuestionAnswer = "Zhengzhou";
 

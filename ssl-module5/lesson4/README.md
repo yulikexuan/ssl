@@ -187,7 +187,118 @@
 1.  One thing different is before saving new password, we need to authenticate
     the user manually
     
+
+## Custom Security Expression
+
+### The Framework
+
+1.  The Method Expression Configuration class:
     
+    ``` 
+    org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration    
+    ```
+    - Base Configuration for enabling global method security  
+    - Classes may extend this class to customize the defaults 
+    - Must be sure to specify the EnableGlobalMethodSecurity annotation on the subclass
+
+2.  Method Security Expression Handler
+    ``` 
+    org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler
+    ```
+    
+3.  Security Expression Root
+    ``` 
+    org.springframework.security.access.expression.SecurityExpressionRoot
+    ```
+    
+### How to implement custom security expression
+
+1.  Create security expression operation class ``` SslSecurityExpressionOperation ```
+    - Extend ```SecurityExpressionRoot``` 
+        * Add new expression method
+          ``` 
+          public boolean isAdmin() {
+              return Optional.ofNullable(this.getPrincipal())
+                      .map(this::isUserHasAdminRole)
+                      .orElse(false);
+          }
+      
+          private boolean isUserHasAdminRole(Object o) {
+      
+              if ((o == null) || !(o instanceof User)) {
+                  return false;
+              }
+      
+              final User user = (User)o;
+              return user.getAuthorities().contains(
+                      new SimpleGrantedAuthority("ROLE_ADMIN"));
+          }
+          ```
+    - Implement MethodSecurityExpressionOperations
+        * Copy content of class ```MethodSecurityExpressionRoot``` into ``` SslSecurityExpressionOperation ```
+        * Cannot extend ```MethodSecurityExpressionRoot``` directly because it is package private
+        
+2.  Create Method Security Expression Handler ``` SslMethodSecurityExpressionHandler ```
+    
+    - Extend ``` DefaultMethodSecurityExpressionHandler ```
+    
+        * Override ```createSecurityExpressionRoot``` method
+        
+        ``` 
+        @Override
+        protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
+                Authentication authentication, MethodInvocation invocation) {
+    
+            SslSecurityExpressionOperation root =
+                    new SslSecurityExpressionOperation(authentication);
+    
+            root.setThis(invocation.getThis());
+            root.setPermissionEvaluator(getPermissionEvaluator());
+            root.setTrustResolver(getTrustResolver());
+            root.setRoleHierarchy(getRoleHierarchy());
+            root.setDefaultRolePrefix(getDefaultRolePrefix());
+    
+            return root;
+        }
+        ```
+
+3.  Create Method Security Configuration class ``` SslMethodSecurityConfigurer ```
+
+    - Extend ``` GlobalMethodSecurityConfiguration ``` class
+    - Override ``` createExpressionHandler ``` method
+    
+        ``` 
+        @Configuration
+        @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true) // prePostEnabled is REQUIRED!
+        public class SslMethodSecurityConfigurer extends
+                GlobalMethodSecurityConfiguration {
+        
+            @Override
+            protected MethodSecurityExpressionHandler createExpressionHandler() {
+                return new SslMethodSecurityExpressionHandler();
+            }
+        
+        }///:~
+        ```
+
+4.  Using new expression ``` isAdmin() ``` in ``` UserController ```
+    
+        ``` 
+        @PreAuthorize("isAdmin()")
+        @GetMapping
+        public ModelAndView list() {
+    
+            List<User> userList =  this.userService.findAllUsers();
+    
+            UserListDto users = this.userListMapper.userListToUserListDto(userList);
+    
+            return new ModelAndView("users/list", "users",
+                    users.getUsers());
+        }
+        ```
+
+
+
 #### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
 - [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
@@ -196,3 +307,7 @@
 - [Immutable Map Implementations in Java with Guava](https://www.baeldung.com/java-immutable-maps)
 - [Intro to Spring Security Expressions](https://www.baeldung.com/spring-security-expressions)
 - [Introduction to Spring Method Security](https://www.baeldung.com/spring-security-method-security)
+- [Security Expression Operations](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/expression/SecurityExpressionOperations.html)
+- [A Custom Security Expression with Spring Security](https://www.baeldung.com/spring-security-create-new-custom-security-expression)
+
+- [Lesson 4 of Module 5](https://courses.baeldung.com/courses/62597/lectures/924448)

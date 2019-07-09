@@ -4,10 +4,10 @@ server:
 spring:
   thymeleaf:
     cache: false
-  tomcat:
-    accesslog:
-      enabled: true
-    basedir: target/tomcat
+  #  tomcat:
+#    accesslog:
+#      enabled: true
+#    basedir: target/tomcat
   h2:
     console:
       enabled: true

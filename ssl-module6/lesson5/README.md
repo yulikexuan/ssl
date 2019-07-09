@@ -348,7 +348,15 @@
 4.  The complex part and the important part is just a matter of 
     **Choosing the one­way hash function and the salt**
 
-#### Resources:  
+### Why Salting
+
+### Why Stretching
+
+### Custom Password Encoder
+
+
+
+### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
 - [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
 - [Spring Events](https://www.baeldung.com/spring-events)
@@ -358,5 +366,5 @@
 - [Introduction to Spring Method Security](https://www.baeldung.com/spring-security-method-security)
 - [Security Expression Operations](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/access/expression/SecurityExpressionOperations.html)
 - [A Custom Security Expression with Spring Security](https://www.baeldung.com/spring-security-create-new-custom-security-expression)
-
 - [Lesson 4 of Module 5](https://courses.baeldung.com/courses/62597/lectures/924448)
+- [Adding Custom Password Encoder](https://dzone.com/articles/password-encoder-migration-with-spring-security-5)

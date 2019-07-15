@@ -1,11 +1,10 @@
 //: com.yulikexuan.ssl.app.config.security.LssUserDetailsService.java
 
 
-package com.yulikexuan.ssl.app.config.security;
+package com.yulikexuan.ssl.domain.services;
 
 
 import com.google.common.collect.ImmutableList;
-import com.yulikexuan.ssl.domain.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;

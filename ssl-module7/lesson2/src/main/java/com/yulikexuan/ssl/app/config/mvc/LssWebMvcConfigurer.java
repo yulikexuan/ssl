@@ -79,6 +79,8 @@ public class LssWebMvcConfigurer implements WebMvcConfigurer {
 
         registry.addViewController("/secured").setViewName("securedPage");
 
+        registry.addViewController("/profile").setViewName("profile");
+
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
     }
 

@@ -21,5 +21,6 @@ spring:
             enable: true
 app:
   security:
+    runAskey: SSL_RUN_AS_KEY
     permit:
       urls: /h2-console/**, /signup, /user/register, /registrationConfirm*/**, /forgotPassword, /user/resetPassword, /user/changePassword, /js/** # , /favicon*

@@ -355,6 +355,116 @@
 ### Custom Password Encoder
 
 
+## Run-As Authentication
+
+### Why run-as?
+1.  Make a user who has a regular role to run or use some service whick needs
+    more extra privileges that the regular role does not have
+    
+### Create a RunAsManager Bean 
+
+1.  RunAsManager permits implementations to replace the Authentication object 
+    that applies to the current secure object invocation only like "Generate 
+    report"
+
+2.  Can only create a RunAsManager Bean in a class which extends 
+    ``` GlobalMethodSecurityConfiguration ``` class
+    
+    ``` 
+    @Value("${app.security.runAsKey}")
+    private String runAsKey;
+    
+    @Override
+    protected RunAsManager runAsManager() {
+        // super.runAsManager() return null by default
+        final RunAsManagerImpl runAsManager = new RunAsManagerImpl();
+        runAsManager.setKey(this.runAsKey);
+        return runAsManager;
+    }
+    ```
+    
+### Define AuthenticationProvider for RunAs
+
+1.  Define an AuthenticationProvider for RunAs in the main security 
+    configuration class. Note: use the same key value when define the 
+    RunAsManager
+
+    ``` 
+    @Bean
+    public AuthenticationProvider runAsAuthenticationProvider() {
+        RunAsImplAuthenticationProvider runAsImplAuthenticationProvider =
+                new RunAsImplAuthenticationProvider();
+        runAsImplAuthenticationProvider.setKey(this.runAsKey);
+        return runAsImplAuthenticationProvider;
+    }
+    ```
+
+2.  Also need to define a Standard AuthenticationProvider
+
+    ``` 
+    @Bean
+    public AuthenticationProvider daoAuthenticationProvider() {
+
+        final DaoAuthenticationProvider daoAuthenticationProvider =
+                new DaoAuthenticationProvider();
+
+        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+
+        return daoAuthenticationProvider;
+    }
+    ```
+    
+3.  Add AuthenticationProviders to AuthenticationManager
+
+    ``` 
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder authManagerBuilder)
+            throws Exception {
+        authManagerBuilder.authenticationProvider(this.daoAuthenticationProvider());
+        authManagerBuilder.authenticationProvider(this.runAsAuthenticationProvider());
+    }
+    
+    ```
+
+### Create run-as controller
+
+1.  Add a run-as method with config-attribute "RUN_AS_REPORTER" 
+    Must have a non-run-as configAttribute also, like "ROLE_USER" here
+    That means who runs as a reporter
+    
+    ``` 
+    @RequestMapping
+    @ResponseBody
+    @Secured({"ROLE_USER", "RUN_AS_REPORTER"})
+    public String tryRunAs() {
+
+        final Authentication authentication = this.runAsService.getCurrentUser();
+
+        authentication.getAuthorities().forEach(
+                auth -> log.info(">>>>>>> Run-As Authorities: {}",
+                        auth.getAuthority()));
+
+        return "Current User Authorities inside this RunAS method only " +
+                authentication.getAuthorities().toString();
+    }
+    ```
+    
+### Create run-as service
+
+1.  Add a run-as method with config-attribute "ROLE_RUN_AS_REPORTER" 
+
+    ``` 
+    @Secured("ROLE_RUN_AS_REPORTER")
+    public Authentication getCurrentUser() {
+
+        Authentication authentication = SecurityContextHolder.getContext()
+                .getAuthentication();
+
+        return authentication;
+    }
+    ```
+
 
 ### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
@@ -368,3 +478,4 @@
 - [A Custom Security Expression with Spring Security](https://www.baeldung.com/spring-security-create-new-custom-security-expression)
 - [Lesson 4 of Module 5](https://courses.baeldung.com/courses/62597/lectures/924448)
 - [Adding Custom Password Encoder](https://dzone.com/articles/password-encoder-migration-with-spring-security-5)
+- [Run-As Authentication Replacement](https://docs.spring.io/spring-security/site/docs/3.0.x/reference/runas.html)

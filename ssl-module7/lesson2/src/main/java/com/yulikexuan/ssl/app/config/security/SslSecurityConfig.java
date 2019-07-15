@@ -9,12 +9,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -36,6 +40,9 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
+
+    @Value("${app.security.runAskey}")
+    private String runAsKey;
 
     @Autowired
     public SslSecurityConfig(UserDetailsService userDetailsService) {
@@ -73,10 +80,11 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     public void configureGlobal(AuthenticationManagerBuilder authManagerBuilder)
             throws Exception {
 
-        // Module 2:
-        authManagerBuilder.userDetailsService(this.userDetailsService);
-
-    } // @formatter:on
+        // DaoAuthenticationProvider should be wired explicitly with RunAsAuthenticationProvider
+        // authManagerBuilder.userDetailsService(this.userDetailsService);
+        authManagerBuilder.authenticationProvider(this.daoAuthenticationProvider());
+        authManagerBuilder.authenticationProvider(this.runAsAuthenticationProvider());
+    }
 
     /*
      * The default configuration is:
@@ -182,6 +190,30 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
          *      19.5.3: Logging Out
          */
 
-    }// @formatter:off
+    }//  End of configure(HttpSecurity)
+
+    @Bean
+    public AuthenticationProvider daoAuthenticationProvider() {
+
+        final DaoAuthenticationProvider daoAuthenticationProvider =
+                new DaoAuthenticationProvider();
+
+        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+
+        return daoAuthenticationProvider;
+    }
+
+    // Should be wired with DaoAuthenticationProvider together explicitly
+    @Bean
+    public AuthenticationProvider runAsAuthenticationProvider() {
+
+        RunAsImplAuthenticationProvider runAsImplAuthenticationProvider =
+                new RunAsImplAuthenticationProvider();
+
+        runAsImplAuthenticationProvider.setKey(this.runAsKey);
+
+        return runAsImplAuthenticationProvider;
+    }
 
 }///:~

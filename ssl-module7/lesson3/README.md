@@ -465,6 +465,13 @@
     }
     ```
 
+### InheritableThreadLocal for Accessing SecurityContext from Async Service 
+
+1.  Enable Spring Async Feature
+
+2.  Add spring system property to run-config:
+    
+    - Dspring.security.strategy=MODE_INHERITABLETHREADLOCAL
 
 ### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)

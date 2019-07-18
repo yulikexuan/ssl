@@ -25,17 +25,20 @@ public class UserService implements IUserService {
     private final ISecurityQuestionService securityQuestionService;
     private final ISecurityQuestionDefinitionService secuQuestionDefService;
     private final IPasswordResetTokenService passwordResetTokenService;
+    private final AsyncService asyncService;
 
     @Autowired
     public UserService(IUserRepository userRepository,
                        ISecurityQuestionService securityQuestionService,
                        ISecurityQuestionDefinitionService secuQuestionDefService,
-                       IPasswordResetTokenService passwordResetTokenService) {
+                       IPasswordResetTokenService passwordResetTokenService,
+                       AsyncService asyncService) {
 
         this.userRepository = userRepository;
         this.securityQuestionService = securityQuestionService;
         this.secuQuestionDefService = secuQuestionDefService;
         this.passwordResetTokenService = passwordResetTokenService;
+        this.asyncService = asyncService;
     }
 
     @Override
@@ -45,6 +48,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<User> findAllUsers() {
+        this.asyncService.asyncRun();
         return this.userRepository.findAll();
     }
 

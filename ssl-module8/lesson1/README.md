@@ -494,6 +494,12 @@
 4.  Repeat step 1
 
 
+## Custom authentication provider
+
+### Create a new custom authentication provider implementing ``` AuthenticationProvider ```
+
+### In security config class, add this new custom auth provider
+ 
 
 ### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
@@ -508,3 +514,4 @@
 - [Lesson 4 of Module 5](https://courses.baeldung.com/courses/62597/lectures/924448)
 - [Adding Custom Password Encoder](https://dzone.com/articles/password-encoder-migration-with-spring-security-5)
 - [Run-As Authentication Replacement](https://docs.spring.io/spring-security/site/docs/3.0.x/reference/runas.html)
+- [Spring Security Authentication Provider](https://www.baeldung.com/spring-security-authentication-provider)

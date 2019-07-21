@@ -41,6 +41,7 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SslLoggingFilter sslLoggingFilter;
     private final UserDetailsService userDetailsService;
+    private final SslCustomAuthenticationProvider customAuthenticationProvider;
 
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
@@ -49,10 +50,14 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     private String runAsKey;
 
     @Autowired
-    public SslSecurityConfig(SslLoggingFilter sslLoggingFilter,
-                             UserDetailsService userDetailsService) {
+    public SslSecurityConfig(
+            SslLoggingFilter sslLoggingFilter,
+            UserDetailsService userDetailsService,
+            SslCustomAuthenticationProvider customAuthenticationProvider) {
+
         this.sslLoggingFilter = sslLoggingFilter;
         this.userDetailsService = userDetailsService;
+        this.customAuthenticationProvider = customAuthenticationProvider;
     }
 
     /*
@@ -88,8 +93,9 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
 
         // DaoAuthenticationProvider should be wired explicitly with RunAsAuthenticationProvider
         // authManagerBuilder.userDetailsService(this.userDetailsService);
-        authManagerBuilder.authenticationProvider(this.daoAuthenticationProvider());
-        authManagerBuilder.authenticationProvider(this.runAsAuthenticationProvider());
+        // authManagerBuilder.authenticationProvider(this.daoAuthenticationProvider());
+        // authManagerBuilder.authenticationProvider(this.runAsAuthenticationProvider());
+        authManagerBuilder.authenticationProvider(this.customAuthenticationProvider);
     }
 
     /*

@@ -96,7 +96,7 @@ public class SslCustomAuthenticationProvider implements AuthenticationProvider {
             Authentication authentication) {
 
         // Execute the third party authentication ... ...
-        return true;
+        return false;
     }
 
     private boolean supportsAuthentication(Authentication authentication) {

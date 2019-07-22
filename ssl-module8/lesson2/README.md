@@ -501,6 +501,20 @@
 ### In security config class, add this new custom auth provider
  
 
+## Multi-Authentication Providers
+
+   ``` 
+   public void configureGlobal(AuthenticationManagerBuilder authManagerBuilder)
+           throws Exception {
+
+       authManagerBuilder.authenticationProvider(
+               this.customAuthenticationProvider)
+               .authenticationProvider(this.daoAuthenticationProvider())
+               .authenticationProvider(this.runAsAuthenticationProvider());
+   }
+   ```
+
+
 ### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
 - [Set up h2 console with spring security](https://dzone.com/articles/using-the-h2-database-console-in-spring-boot-with)
@@ -515,3 +529,6 @@
 - [Adding Custom Password Encoder](https://dzone.com/articles/password-encoder-migration-with-spring-security-5)
 - [Run-As Authentication Replacement](https://docs.spring.io/spring-security/site/docs/3.0.x/reference/runas.html)
 - [Spring Security Authentication Provider](https://www.baeldung.com/spring-security-authentication-provider)
+- [Multiple Authentication Providers in Spring Security](https://www.baeldung.com/spring-security-multiple-auth-providers)
+- [Video:Multiple Authentication Providers in Spring Security](https://courses.baeldung.com/courses/63235/lectures/932979)
+

@@ -4,6 +4,7 @@
 package com.yulikexuan.ssl.app.config.security;
 
 
+import com.google.common.collect.Lists;
 import com.yulikexuan.ssl.app.config.filters.SslLoggingFilter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.access.intercept.RunAsImplAuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -61,13 +63,24 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /*
-     * Override this method to expose the AuthenticationManager from
-     * configure(AuthenticationManagerBuilder) to be exposed as a Bean
+     * In most cases, we do not have to create new AuthenticationManager
+     * And, setEraseCredentialsAfterAuthentication make high security risk but
+     * it better for cache SecurityContext
      */
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    public AuthenticationManager authenticationManager() throws Exception {
+
+        ProviderManager authenticationManager = new ProviderManager(
+                Lists.newArrayList(
+                        this.customAuthenticationProvider,
+                        this.daoAuthenticationProvider(),
+                        this.runAsAuthenticationProvider()));
+
+        authenticationManager.setEraseCredentialsAfterAuthentication(false);
+
+        return authenticationManager;
+
+        // return super.authenticationManagerBean();
     }
 
     @Bean
@@ -90,14 +103,14 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder authManagerBuilder)
             throws Exception {
-        
-        // Only for Module 8 / Lesson 1:
-        // authManagerBuilder.authenticationProvider(this.customAuthenticationProvider);
 
-        // DaoAuthenticationProvider should be wired explicitly with RunAsAuthenticationProvider
-        // authManagerBuilder.userDetailsService(this.userDetailsService);
-        authManagerBuilder.authenticationProvider(this.daoAuthenticationProvider());
-        authManagerBuilder.authenticationProvider(this.runAsAuthenticationProvider());
+//        authManagerBuilder.authenticationProvider(
+//                this.customAuthenticationProvider)
+//                .authenticationProvider(this.daoAuthenticationProvider())
+//                .authenticationProvider(this.runAsAuthenticationProvider());
+
+        authManagerBuilder.parentAuthenticationManager(
+                this.authenticationManager());
     }
 
     /*

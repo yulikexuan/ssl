@@ -3,7 +3,7 @@ server:
   port: 8083
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/ssl_db
+    url: jdbc:mysql://localhost:3306/ssl_db_jdbc
     username: root
     password: ${MYSQL_PW}
     initialization-mode: always # Always execute data.sql when starting boot

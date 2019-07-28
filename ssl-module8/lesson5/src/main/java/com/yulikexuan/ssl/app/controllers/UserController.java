@@ -7,6 +7,7 @@ package com.yulikexuan.ssl.app.controllers;
 import com.yulikexuan.ssl.app.config.security.SslSecurityConfig;
 import com.yulikexuan.ssl.app.mapper.IUserListMapper;
 import com.yulikexuan.ssl.app.mapper.IUserMapper;
+import com.yulikexuan.ssl.app.model.ActiveUserStore;
 import com.yulikexuan.ssl.app.model.UserDto;
 import com.yulikexuan.ssl.app.model.UserListDto;
 import com.yulikexuan.ssl.domain.model.User;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -33,13 +35,16 @@ public class UserController {
     private final IUserMapper userMapper;
     private final IUserListMapper userListMapper;
     private final PasswordEncoder passwordEncoder;
+    private final ActiveUserStore activeUserStore;
 
     @Autowired
     public UserController(IUserService userService,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          ActiveUserStore activeUserStore) {
 
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.activeUserStore = activeUserStore;
         this.userMapper = IUserMapper.INSTANCE;
         this.userListMapper = IUserListMapper.INSTANCE;
     }

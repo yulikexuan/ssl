@@ -514,6 +514,9 @@
    }
    ```
 
+## Tracking logged-in Users
+
+
 
 ### Resources:  
 - [Guide to Spring Email](https://www.baeldung.com/spring-email)
@@ -531,4 +534,4 @@
 - [Spring Security Authentication Provider](https://www.baeldung.com/spring-security-authentication-provider)
 - [Multiple Authentication Providers in Spring Security](https://www.baeldung.com/spring-security-multiple-auth-providers)
 - [Video:Multiple Authentication Providers in Spring Security](https://courses.baeldung.com/courses/63235/lectures/932979)
-
+- [Control the Session with Spring Security](https://www.baeldung.com/spring-security-session)

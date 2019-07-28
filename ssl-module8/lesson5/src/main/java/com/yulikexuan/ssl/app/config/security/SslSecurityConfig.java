@@ -24,6 +24,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
@@ -45,6 +47,9 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     private final UserDetailsService userDetailsService;
     private final SslCustomAuthenticationProvider customAuthenticationProvider;
 
+    private final AuthenticationSuccessHandler authenticationSuccessHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
+
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
 
@@ -55,11 +60,15 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
     public SslSecurityConfig(
             SslLoggingFilter sslLoggingFilter,
             UserDetailsService userDetailsService,
-            SslCustomAuthenticationProvider customAuthenticationProvider) {
+            SslCustomAuthenticationProvider customAuthenticationProvider,
+            AuthenticationSuccessHandler authenticationSuccessHandler,
+            LogoutSuccessHandler logoutSuccessHandler) {
 
         this.sslLoggingFilter = sslLoggingFilter;
         this.userDetailsService = userDetailsService;
         this.customAuthenticationProvider = customAuthenticationProvider;
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.logoutSuccessHandler = logoutSuccessHandler;
     }
 
     /*
@@ -174,7 +183,7 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
                 // .anonymous()
                 // .access("isAnonymous()")
                 // .access("request.method == 'GET'")
-                //.access("request.method != 'POST'")
+                // .access("request.method != 'POST'")
                 // .access("hasRole('ROLE_USER') and principal.username =='yul'")
                 .access("hasRole('ROLE_ADMIN') or principal.username =='yul'")
                 //: End of Authorization Expression
@@ -186,10 +195,14 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .formLogin()
                 .loginPage("/login") // Specifies the URL to send users to if login is required
-                .loginProcessingUrl("/whoareyou") // Specifies the URL to validate the credentials
+                .defaultSuccessUrl("/")
+                // Specifies the URL to validate the credentials
+                .loginProcessingUrl("/whoareyou")
+                .successHandler(this.authenticationSuccessHandler)
                 .permitAll() // Ensures the urls for the getLoginPage() and getLoginProcessingUrl() are granted access to any user.
                 .and()
                 .logout()
+                .logoutSuccessHandler(this.logoutSuccessHandler)
                 .permitAll()
                 .logoutRequestMatcher(new AntPathRequestMatcher(
                         "/quit", "GET"))// POST is the better

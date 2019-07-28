@@ -536,4 +536,4 @@
 - [Multiple Authentication Providers in Spring Security](https://www.baeldung.com/spring-security-multiple-auth-providers)
 - [Video:Multiple Authentication Providers in Spring Security](https://courses.baeldung.com/courses/63235/lectures/932979)
 - [Tracking Logged in Users](https://www.baeldung.com/spring-security-track-logged-in-users)
-
+- [Control the Session with Spring Security](https://www.baeldung.com/spring-security-session)

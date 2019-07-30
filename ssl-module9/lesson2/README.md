@@ -533,3 +533,4 @@
 - [Multiple Authentication Providers in Spring Security](https://www.baeldung.com/spring-security-multiple-auth-providers)
 - [Video:Multiple Authentication Providers in Spring Security](https://courses.baeldung.com/courses/63235/lectures/932979)
 - [Control the Session with Spring Security](https://www.baeldung.com/spring-security-session)
+- [Many-To-Many Relationship in JPA](https://www.baeldung.com/jpa-many-to-many)

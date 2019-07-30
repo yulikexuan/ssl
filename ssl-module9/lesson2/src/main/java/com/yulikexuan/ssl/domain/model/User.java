@@ -4,6 +4,7 @@
 package com.yulikexuan.ssl.domain.model;
 
 
+import com.google.common.collect.ImmutableSet;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.Set;
 
 
 @Data
@@ -39,5 +41,17 @@ public class User {
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id",
+                    referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id",
+                    referencedColumnName = "id"))
+    private Set<Role> roles;
+
+    public Set<Role> getRoles() {
+        return ImmutableSet.copyOf(this.roles);
+    }
 
 }///:~

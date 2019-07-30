@@ -54,6 +54,7 @@ public class SslSecurityConfig extends WebSecurityConfigurerAdapter {
      * it better for cache SecurityContext
      */
     @Bean
+    @Override
     public AuthenticationManager authenticationManager() throws Exception {
 
         ProviderManager authenticationManager = new ProviderManager(

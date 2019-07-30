@@ -5,6 +5,7 @@ package com.yulikexuan.ssl.app.services;
 
 
 import com.google.common.collect.ImmutableList;
+import com.yulikexuan.ssl.domain.model.Role;
 import com.yulikexuan.ssl.domain.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -16,7 +17,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Primary
@@ -67,6 +70,12 @@ public class SslUserDetailsService implements UserDetailsService {
                         ADMIN_GRANTED_AUTHORITIES.toArray(authorities) :
                         DEFAULT_GRANTED_AUTHORITIES.toArray(authorities))
                 .build();
+    }
+
+    public final Set<? extends GrantedAuthority> getAuthorities(
+            final Set<Role> roles) {
+
+        return new HashSet<>();
     }
 
 }///:~

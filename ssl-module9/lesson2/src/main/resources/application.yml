@@ -1,0 +1,29 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  port: 8081
+  tomcat:
+    accesslog:
+      enabled: true
+      suffix: .log
+      prefix: access_log
+      file-date-format: .yyyy-MM-dd
+      directory: logs
+      pattern: common
+    basedir: lesson2/target/tomcat
+spring:
+  thymeleaf:
+    cache: false
+  h2:
+    console:
+      enabled: true
+      path: "/h2-console"
+app:
+  security:
+    permit:
+      urls: /h2-console/**
+logging:
+  level:
+    org:
+      apache:
+        tomcat: INFO
+        catalina: INFO

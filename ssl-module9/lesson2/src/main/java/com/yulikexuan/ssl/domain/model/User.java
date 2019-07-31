@@ -13,6 +13,8 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -48,10 +50,12 @@ public class User {
                     referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id",
                     referencedColumnName = "id"))
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();;
 
     public Set<Role> getRoles() {
-        return ImmutableSet.copyOf(this.roles);
+        return Optional.ofNullable(this.roles)
+                .map(r -> ImmutableSet.copyOf(r))
+                .orElse(ImmutableSet.of());
     }
 
 }///:~

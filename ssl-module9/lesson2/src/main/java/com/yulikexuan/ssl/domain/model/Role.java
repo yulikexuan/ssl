@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -24,6 +26,7 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     /*
@@ -37,10 +40,12 @@ public class Role {
                     referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id",
                     referencedColumnName = "id"))
-    private Set<Privilege> privileges;
+    private Set<Privilege> privileges = new HashSet<>();;
 
     public Set<Privilege> getPrivileges() {
-        return ImmutableSet.copyOf(this.privileges);
+        return Optional.ofNullable(this.privileges)
+                .map(p -> ImmutableSet.copyOf(p))
+                .orElse(ImmutableSet.of());
     }
 
 }///:~

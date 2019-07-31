@@ -17,9 +17,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Primary
@@ -49,12 +51,12 @@ public class SslUserDetailsService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         return this.userService.findUserByUsername(username)
-                .map(SslUserDetailsService::userToUserDetails)
+                .map(this::userToUserDetails)
                 .orElseThrow(() -> new UsernameNotFoundException(
                         "No user found with username: " + username));
     }
 
-    public static UserDetails userToUserDetails(
+    private UserDetails userToUserDetails(
             com.yulikexuan.ssl.domain.model.User lssUser) {
 
         GrantedAuthority[] authorities = {};
@@ -66,14 +68,19 @@ public class SslUserDetailsService implements UserDetailsService {
                 .accountLocked(false)
                 .disabled(!lssUser.getEnabled())
                 .credentialsExpired(false)
-                .authorities(lssUser.getUsername().equals("admin") ?
-                        ADMIN_GRANTED_AUTHORITIES.toArray(authorities) :
-                        DEFAULT_GRANTED_AUTHORITIES.toArray(authorities))
+                .authorities(this.getAuthorities(lssUser.getRoles()))
                 .build();
     }
 
-    public final Set<? extends GrantedAuthority> getAuthorities(
-            final Set<Role> roles) {
+    public final Collection<? extends GrantedAuthority> getAuthorities(
+            final Collection<Role> roles) {
+
+        assert roles != null : "Roles should not be null.";
+
+        roles.stream()
+                .flatMap(role -> role.getPrivileges().stream())
+                .map(p -> new SimpleGrantedAuthority(p.getName()))
+                .collect(Collectors.toList());
 
         return new HashSet<>();
     }

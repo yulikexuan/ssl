@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -25,6 +27,7 @@ public class Privilege {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     /*
@@ -35,7 +38,9 @@ public class Privilege {
     private Set<Role> roles;
 
     public Set<Role> getRoles() {
-        return ImmutableSet.copyOf(this.roles);
+        return Optional.ofNullable(this.roles)
+                .map(roles -> ImmutableSet.copyOf(roles))
+                .orElse(ImmutableSet.of());
     }
 
 }///:~

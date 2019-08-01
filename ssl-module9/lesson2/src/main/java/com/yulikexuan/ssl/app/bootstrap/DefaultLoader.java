@@ -4,7 +4,7 @@
 package com.yulikexuan.ssl.app.bootstrap;
 
 
-import com.yulikexuan.ssl.app.config.security.SslSecurityConfig;
+import com.yulikexuan.ssl.app.config.security.SslBasicSecurityConfigerAdapterWithComments;
 import com.yulikexuan.ssl.domain.model.Privilege;
 import com.yulikexuan.ssl.domain.model.Role;
 import com.yulikexuan.ssl.domain.model.User;
@@ -71,7 +71,7 @@ public class DefaultLoader implements CommandLineRunner {
         this.roleService.saveRole(roleUser);
 
         String pw = this.passwordEncoder.encode(
-                SslSecurityConfig.DEFAULT_SIMPLE_PW);
+                SslBasicSecurityConfigerAdapterWithComments.DEFAULT_SIMPLE_PW);
         Long questionId = 5L;
         String securityQuestionAnswer = "Zhengzhou";
 

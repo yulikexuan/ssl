@@ -77,12 +77,12 @@ public class SslUserDetailsService implements UserDetailsService {
 
         assert roles != null : "Roles should not be null.";
 
-        roles.stream()
+        Collection<? extends GrantedAuthority> authorities = roles.stream()
                 .flatMap(role -> role.getPrivileges().stream())
                 .map(p -> new SimpleGrantedAuthority(p.getName()))
                 .collect(Collectors.toList());
 
-        return new HashSet<>();
+        return authorities;
     }
 
 }///:~

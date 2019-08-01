@@ -4,7 +4,7 @@
 package com.yulikexuan.ssl.app.controllers;
 
 
-import com.yulikexuan.ssl.app.config.security.SslSecurityConfig;
+import com.yulikexuan.ssl.app.config.security.SslBasicSecurityConfigerAdapterWithComments;
 import com.yulikexuan.ssl.app.model.IUserListMapper;
 import com.yulikexuan.ssl.app.model.IUserMapper;
 import com.yulikexuan.ssl.app.model.UserDto;
@@ -79,7 +79,7 @@ public class UserController {
                     "formErrors", result.getAllErrors());
         }
         userDto.setPassword(this.passwordEncoder.encode(
-                SslSecurityConfig.DEFAULT_SIMPLE_PW));
+                SslBasicSecurityConfigerAdapterWithComments.DEFAULT_SIMPLE_PW));
         User savedUser = this.userService.saveUser(
                 userMapper.userDtoToUser(userDto));
         userDto.setId(savedUser.getId());

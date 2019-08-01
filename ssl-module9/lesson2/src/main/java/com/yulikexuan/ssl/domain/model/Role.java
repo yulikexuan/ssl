@@ -3,15 +3,10 @@
 
 package com.yulikexuan.ssl.domain.model;
 
-import com.google.common.collect.ImmutableSet;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 
@@ -41,11 +36,5 @@ public class Role {
             inverseJoinColumns = @JoinColumn(name = "privilege_id",
                     referencedColumnName = "id"))
     private Set<Privilege> privileges = new HashSet<>();;
-
-    public Set<Privilege> getPrivileges() {
-        return Optional.ofNullable(this.privileges)
-                .map(p -> ImmutableSet.copyOf(p))
-                .orElse(ImmutableSet.of());
-    }
 
 }///:~

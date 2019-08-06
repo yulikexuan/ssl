@@ -225,6 +225,7 @@
     
     <modules>
         <module>lesson2</module>
+        <module>lesson3</module>
 	</modules>
 
 </project>

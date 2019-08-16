@@ -6,14 +6,14 @@
 	<modelVersion>4.0.0</modelVersion>
 
     <description>
-        The Learn Spring Security Course Module 12 - OAuth2 - JWT
+        SSL Module 12: Advanced REST API Security - OAuth2 - Version 2
     </description>
 
-	<name>Learn-Spring-Security-Module-12</name>
+	<name>Learn-Spring-Security-Module-12-v2</name>
 
 	<groupId>com.yulikexuan.ssl</groupId>
-	<artifactId>ssl-module12</artifactId>
-	<version>201902</version>
+	<artifactId>ssl-module12-v2</artifactId>
+	<version>201903</version>
 	<packaging>pom</packaging>
     
     <parent>
@@ -25,12 +25,12 @@
     
     <properties>
         
-        <java.version>11</java.version>
+        <java.version>12</java.version>
         <jaxb.version>2.3.1</jaxb.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <org.mapstruct.version>1.3.0.Final</org.mapstruct.version>
-        <junit-jupiter.version>5.4.2</junit-jupiter.version>
+        <junit-jupiter.version>5.5.1</junit-jupiter.version>
 
         <!-- non-dependencies -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,7 +46,7 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- Java 11 -->
+        <!-- Java 12 -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
@@ -63,6 +63,37 @@
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>${jaxb.version}</version>
+        </dependency>
+
+        <!-- Persistence -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Dev -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${org.mapstruct.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>28.0-jre</version>
         </dependency>
 
         <!-- web -->
@@ -82,6 +113,30 @@
             <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 
+        <!-- Unit Test -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -91,6 +146,33 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <release>${java.version}</release>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.mapstruct</groupId>
+                            <artifactId>mapstruct-processor</artifactId>
+                            <version>${org.mapstruct.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                    <compilerArgs>
+                        <compilerArg>
+                            -Amapstruct.defaultComponentModel=spring
+                        </compilerArg>
+                    </compilerArgs>
+                </configuration>
             </plugin>
 
             <!--
@@ -132,11 +214,7 @@
     </build>
     
     <modules>
-		<module>lesson1</module>
-        <module>lesson2</module>
-        <module>lesson3</module>
-        <module>lesson4</module>
-        <module>ressvr</module>
+        <module>lesson1</module>
 	</modules>
 
 </project>

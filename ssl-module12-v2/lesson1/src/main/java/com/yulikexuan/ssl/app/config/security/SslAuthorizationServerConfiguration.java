@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.config.annotation.configurers.ClientD
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
@@ -25,14 +26,17 @@ public class SslAuthorizationServerConfiguration extends
 
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
+    private final ClientDetailsService clientDetailsService;
 
     @Autowired
     public SslAuthorizationServerConfiguration(
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder) {
+            PasswordEncoder passwordEncoder,
+            ClientDetailsService clientDetailsService) {
 
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.clientDetailsService = clientDetailsService;
     }
 
     // Beans:
@@ -55,16 +59,19 @@ public class SslAuthorizationServerConfiguration extends
 
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory()
-                .withClient("cloud")
-                .secret(this.passwordEncoder.encode("2PGlgRk9Mv"))
-                .authorizedGrantTypes("password")
-                // Scope name: <app-name>.<resource-uri>.<privilege>
-                // For example: product.list
-                .scopes("any")
-                // Not redirected and promoted to manually approve any scopes
-                .autoApprove(true)
-                .accessTokenValiditySeconds(3600);
+
+//        clients.inMemory()
+//                .withClient("cloud")
+//                .secret(this.passwordEncoder.encode("2PGlgRk9Mv"))
+//                .authorizedGrantTypes("password")
+//                // Scope name: <app-name>.<resource-uri>.<privilege>
+//                // For example: product.list
+//                .scopes("any")
+//                // Not redirected and promoted to manually approve any scopes
+//                .autoApprove(true)
+//                .accessTokenValiditySeconds(3600);
+
+        clients.withClientDetails(this.clientDetailsService);
     }
 
 }///:~

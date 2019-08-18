@@ -4,7 +4,6 @@
 package com.yulikexuan.ssl.app.services;
 
 
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.yulikexuan.ssl.domain.model.Role;
 import com.yulikexuan.ssl.domain.services.IUserService;
@@ -19,9 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 

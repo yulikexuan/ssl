@@ -8,6 +8,7 @@ import com.yulikexuan.ssl.domain.model.oauth2.Client;
 import com.yulikexuan.ssl.domain.model.oauth2.ClientScope;
 import com.yulikexuan.ssl.domain.model.oauth2.GrantType;
 import com.yulikexuan.ssl.domain.services.oauth2.IClientService;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
+@Primary
 @Service
 public class SslClientDetailsService implements ClientDetailsService {
 
@@ -36,19 +38,6 @@ public class SslClientDetailsService implements ClientDetailsService {
         return this.clientService.getClientByClientId(clientId)
                 .map(this::mapToClientDetails)
                 .orElse(null);
-
-                /*
-        String scopes = client.getScope().stream().collect(Collectors.joining(","));
-        String grantTypes = client.getAuthorizedGrantTypes().stream().collect(Collectors.joining(","));
-
-        BaseClientDetails base = new BaseClientDetails(client.getClientId(), resourceIds, scopes, grantTypes, authorities);
-        base.setClientSecret(client.getClientSecret());
-        base.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
-        base.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
-        base.setAdditionalInformation(client.getAdditionalInformation());
-        base.setAutoApproveScopes(client.getScope());
-        return base;
-                 */
     }
 
     private ClientDetails mapToClientDetails(Client client) {

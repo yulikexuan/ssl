@@ -9,7 +9,7 @@ server:
       file-date-format: .yyyy-MM-dd
       directory: logs
       pattern: common
-    basedir: lesson2/target/tomcat
+    basedir: lesson1/target/tomcat
 spring:
   thymeleaf:
     cache: false

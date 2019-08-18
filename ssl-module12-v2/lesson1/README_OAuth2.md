@@ -126,12 +126,14 @@
        - Set up ``` TokenStore ```
        - Set up ``` AuthenticationManager ```
     
-    f. Set up Authorization Client
+    f.a Set up Authorization Client in Memory
        - Set up one client in memory with client name and secret
        - Set up authorized grant types: using passoword flow here 
        - Define and auto approve a default scope
        - Specify a token validity in seconds
 
+    f.b Set up Authorization Client with client in Database
+       
     ```
     // a. & b.
     @Slf4j
@@ -187,18 +189,16 @@
 3.  How to test
 
     a. Url for request a token:
-       ``` http://localhost:8081/resources/oauth/token ```
+       ``` http://localhost:8081/oauth/token ```
        Server configuration: 
        ``` 
        server:
-         servlet:
-           context-path: /resources
          port: 8081 
        ```
        
     b. Parameters:
        - grant_type=password
-       - client_id=client
+       - client_id=cloud
        - username=yul
        - password=123456
        
@@ -207,10 +207,11 @@
        - Password=123456 // The client secret
        
     d. Full Url: 
-       ``` http://localhost:8081/resources/oauth/token?grant_type=password&client_id=client&username=yul&password=123456 ```
+       ``` http://localhost:8081/oauth/token?grant_type=password&client_id=client&username=yul&password=123456 ```
     
     e. The request http method should be: ```POST``` other than ```GET```
 
 
 Resources
 - [The Secure Password & Keygen Generator](https://randomkeygen.com/)
+- [Customized Implementation of ClientDetailsService](https://blog.couchbase.com/oauth-2-dynamic-client-registration/)

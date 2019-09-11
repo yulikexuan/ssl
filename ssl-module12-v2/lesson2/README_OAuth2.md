@@ -120,10 +120,17 @@
        
     c. Autowire the ``` AuthenticationManager ``` instance
     
-    d. Define a simple in-memory  ``` TokenStore ```
+    d. Autowire the ``` ClientDetailsService ```
+    
+    e. Autowire the ``` PasswordEncoder ```
+    
+    f. Define a ``` JwtAccessTokenConverter ``` Bean
+    
+    g. Define a ``` JwtTokenStore ``` Bean with the ``` JwtAccessTokenConverter ``` Bean 
 
     e. Set up ``` AuthorizationServerEndpointsConfigurer ```
-       - Set up ``` TokenStore ```
+       - Set up ``` TokenStore ``` 
+       - Set up ``` JwtAccessTokenConverter ```
        - Set up ``` AuthenticationManager ```
     
     f.a Set up Authorization Client in Memory
@@ -136,51 +143,60 @@
        
     ```
     // a. & b.
-    @Slf4j
     @Configuration
     @EnableAuthorizationServer
-    public class AuthorizationServerConfiguration
-            extends AuthorizationServerConfigurerAdapter {
+    public class SslAuthorizationServerConfiguration extends
+            AuthorizationServerConfigurerAdapter {
     
         private final AuthenticationManager authenticationManager;
+        private final PasswordEncoder passwordEncoder;
+        private final ClientDetailsService clientDetailsService;
     
-        // c.:
+        @Value("${app.security.oauth2.jwt.signingkey}")
+        private String signingKey = "6264BB136A72A461C3ACCFB2FC1BF";
+    
         @Autowired
-        public AuthorizationServerConfiguration(
-                AuthenticationManager authenticationManager) {
-    
-            super();
+        public SslAuthorizationServerConfiguration(
+                AuthenticationManager authenticationManager,
+                PasswordEncoder passwordEncoder,
+                ClientDetailsService clientDetailsService) {
     
             this.authenticationManager = authenticationManager;
+            this.passwordEncoder = passwordEncoder;
+            this.clientDetailsService = clientDetailsService;
         }
     
-        // f.: 
-        @Override
-        public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        // Beans:
     
-            clients.inMemory()
-                    .withClient("client")
-                    .secret("{noop}123456")
-                    .authorizedGrantTypes("password")
-                    .scopes("resources")
-                    .autoApprove("resources")
-                    .accessTokenValiditySeconds(3600);
+        @Bean
+        public JwtAccessTokenConverter accessTokenConverter() {
+            final JwtAccessTokenConverter accessTokenConverter =
+                    new JwtAccessTokenConverter();
+            accessTokenConverter.setSigningKey(signingKey);
+            return accessTokenConverter;
         }
     
-        // e.: 
-        @Override
-        public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-                throws Exception {
-    
-            endpoints.tokenStore(tokenStore()).
-                    authenticationManager(this.authenticationManager).
-                    allowedTokenEndpointRequestMethods(HttpMethod.GET, HttpMethod.POST);
-        }
-    
-        // d.:
         @Bean
         public TokenStore tokenStore() {
-            return new InMemoryTokenStore();
+            return new JwtTokenStore(this.accessTokenConverter());
+        }
+    
+        // Configuration:
+    
+        @Override
+        public void configure(final AuthorizationServerEndpointsConfigurer endpoints)
+                throws Exception {
+    
+            endpoints.tokenStore(this.tokenStore())
+                    .authenticationManager(this.authenticationManager)
+                    .accessTokenConverter(this.accessTokenConverter())
+                    .allowedTokenEndpointRequestMethods(HttpMethod.POST);
+        }
+    
+        @Override
+        public void configure(final ClientDetailsServiceConfigurer clients) throws
+                Exception {
+            clients.withClientDetails(this.clientDetailsService);
         }
     
     }///:~
@@ -207,7 +223,7 @@
        - Password=123456 // The client secret
        
     d. Full Url: 
-       ``` http://localhost:8081/oauth/token?grant_type=password&client_id=client&username=yul&password=123456 ```
+       ``` http://localhost:8081/oauth/token?grant_type=password&client_id=cloud&username=yul&password=123456 ```
     
     e. The request http method should be: ```POST``` other than ```GET```
 

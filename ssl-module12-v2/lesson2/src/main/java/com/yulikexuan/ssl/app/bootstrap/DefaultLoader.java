@@ -200,7 +200,8 @@ public class DefaultLoader implements CommandLineRunner {
 
         GrantType pwGrantType = GrantType.builder().type("password").build();
 
-        Client client = Client.builder().clientId("cloud")
+        Client client;
+        client = Client.builder().clientId("cloud")
                 .clientSecret(this.passwordEncoder.encode("2PGlgRk9Mv"))
                 .scope(readScope)
                 .scope(writeScope)

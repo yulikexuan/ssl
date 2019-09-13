@@ -1,0 +1,9 @@
+server:
+  port: 8089
+security:
+  oauth2:
+    resource:
+      jwt:
+        # The URI of the JWT Token
+        key-uri: http://localhost:8081/oauth/token
+        key-value: 6264BB136A72A461C3ACCFB2FC1BF

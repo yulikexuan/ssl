@@ -5,11 +5,9 @@ package com.yulikexuan.ssl.app.config.mvc;
 
 
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.servlet.config.annotation.*;
 
 
@@ -18,25 +16,27 @@ import org.springframework.web.servlet.config.annotation.*;
 @Configuration
 public class LssWebMvcConfigurer implements WebMvcConfigurer {
 
+    // Should NOT be required by Spring Boot 2.x
     @Bean
-    public RequestContextListener requestContextListener() {
-        return new RequestContextListener();
+    public static PropertySourcesPlaceholderConfigurer
+            propertySourcesPlaceholderConfigurer() {
+
+        PropertySourcesPlaceholderConfigurer pspc =
+                new PropertySourcesPlaceholderConfigurer();
+        return pspc;
     }
 
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
-
+    // Should NOT be required ??????????????????????????????????????????????????
     @Override
-    public void configureDefaultServletHandling(final DefaultServletHandlerConfigurer configurer) {
+    public void configureDefaultServletHandling(
+            final DefaultServletHandlerConfigurer configurer) {
+
         configurer.enable();
     }
 
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
-        registry.addViewController("/")
-            .setViewName("forward:/index");
+        registry.addViewController("/").setViewName("forward:/index");
         registry.addViewController("/index");
         registry.addViewController("/securedPage");
     }

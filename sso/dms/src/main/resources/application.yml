@@ -11,24 +11,21 @@ server:
       pattern: common
     basedir: target/tomcat
     
-security:
-  basic:
-    enabled: false
-  oauth2:
-    client: 
-      clientId: cloud
-      clientSecret: 2PGlgRk9Mv
-      # accessTokenUri is the URI to obtain the Access Token
-      accessTokenUri: http://localhost:8081/oauth/token
-      # userAuthorizationUri is the authorization URI that users will be redirected to
-      userAuthorizationUri: http://localhost:8081/oauth/authorize
-    resource: 
-      # userInfoUri the URI of user endpoint to obtain current user details
-      userInfoUri: http://localhost:8081/user/me
-    
 spring:
   thymeleaf:
     cache: false
+
+security:
+  oauth2:
+    jwt:
+      signingkey: 6264BB136A72A461C3ACCFB2FC1BF
+    client:
+      clientId: dms
+      clientSecret: 2PGlgRk9Mv
+      accessTokenUri: http://localhost:8081/oauth/token
+      userAuthorizationUri: http://localhost:8081/oauth/authorize
+    resource:
+      userInfoUri: http://localhost:8081/user/me
 
 logging:
   level:

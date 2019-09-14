@@ -87,6 +87,7 @@ public class SslAuthorizationServerConfiguration extends
     @Override
     public void configure(final ClientDetailsServiceConfigurer clients) throws
             Exception {
+
         clients.withClientDetails(this.clientDetailsService);
     }
 

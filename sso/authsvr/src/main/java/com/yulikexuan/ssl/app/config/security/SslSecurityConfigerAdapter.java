@@ -26,6 +26,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
 
 import java.util.List;
@@ -34,6 +35,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @EnableWebSecurity
+//@EnableResourceServer
 public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
     public static final String DEFAULT_SIMPLE_PW = "123456";

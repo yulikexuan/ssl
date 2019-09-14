@@ -198,23 +198,41 @@ public class DefaultLoader implements CommandLineRunner {
         ClientScope writeScope = ClientScope.builder().scope("PRIVILEGE_WRITE")
                 .build();
 
+        ClientScope userInfoScope = ClientScope.builder().scope("user_info")
+                .build();
+
         GrantType pwGrantType = GrantType.builder().type("password").build();
+
         GrantType authorizationCodeGrantType = GrantType.builder()
                 .type("authorization_code").build();
 
+        final String clientPassword = "2PGlgRk9Mv";
+
         Client client;
         client = Client.builder().clientId("cloud")
-                .clientSecret(this.passwordEncoder.encode("2PGlgRk9Mv"))
+                .clientSecret(this.passwordEncoder.encode(clientPassword))
                 .scope(readScope)
                 .scope(writeScope)
                 .authorizedGrantType(pwGrantType)
-                .authorizedGrantType(authorizationCodeGrantType)
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(3600 * 24)
                 .autoApprove(true)
                 .build();
 
         this.sslClientDetailsService.save(client);
+
+        Client dmsClient;
+        dmsClient = Client.builder().clientId("dms")
+                .clientSecret(this.passwordEncoder.encode(clientPassword))
+                .scope(userInfoScope)
+                .authorizedGrantType(authorizationCodeGrantType)
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(3600 * 24)
+                .redirectUris("http://localhost:8082/login/oauth2/code/")
+                .autoApprove(true)
+                .build();
+
+        this.sslClientDetailsService.save(dmsClient);
 
         log.info(">>>>>>> {} clients loaded.", this.sslClientDetailsService.count());
 

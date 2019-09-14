@@ -42,5 +42,6 @@ public class Client {
 
     private Integer accessTokenValiditySeconds = 3600;
     private  Integer refreshTokenValiditySeconds = 3600 * 24;
+    private String redirectUris;
 
 }///:~

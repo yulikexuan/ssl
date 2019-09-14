@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -17,6 +19,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
@@ -30,6 +33,7 @@ public class SslAuthorizationServerConfiguration extends
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final ClientDetailsService clientDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Value("${app.security.oauth2.jwt.signingkey}")
     private String signingKey = "6264BB136A72A461C3ACCFB2FC1BF";
@@ -38,11 +42,13 @@ public class SslAuthorizationServerConfiguration extends
     public SslAuthorizationServerConfiguration(
             AuthenticationManager authenticationManager,
             PasswordEncoder passwordEncoder,
-            ClientDetailsService clientDetailsService) {
+            ClientDetailsService clientDetailsService,
+            UserDetailsService userDetailsService) {
 
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.clientDetailsService = clientDetailsService;
+        this.userDetailsService = userDetailsService;
     }
 
     // Beans:
@@ -60,20 +66,16 @@ public class SslAuthorizationServerConfiguration extends
         return new JwtTokenStore(this.accessTokenConverter());
     }
 
-    // Configuration:
-
-    /*
-     * Configure the security of the Authorization Server, which means in
-     * practical terms the /oauth/token endpoint
-     */
-    @Override
-    public void configure(AuthorizationServerSecurityConfigurer security)
-            throws Exception {
-
-        security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
-        super.configure(security);
+    @Bean
+    @Primary
+    public DefaultTokenServices tokenService() {
+        DefaultTokenServices tokenServices = new DefaultTokenServices();
+        tokenServices.setTokenStore(this.tokenStore());
+        tokenServices.setSupportRefreshToken(true);
+        return tokenServices;
     }
+
+    // Configuration:
 
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints)
@@ -81,6 +83,7 @@ public class SslAuthorizationServerConfiguration extends
 
         endpoints.tokenStore(this.tokenStore())
                 .authenticationManager(this.authenticationManager)
+                .userDetailsService(this.userDetailsService)
                 .accessTokenConverter(this.accessTokenConverter())
                 .allowedTokenEndpointRequestMethods(HttpMethod.POST);
     }
@@ -90,6 +93,14 @@ public class SslAuthorizationServerConfiguration extends
             Exception {
 
         clients.withClientDetails(this.clientDetailsService);
+    }
+
+    @Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws
+            Exception {
+
+        security.checkTokenAccess("permitAll()");
+        super.configure(security);
     }
 
 }///:~

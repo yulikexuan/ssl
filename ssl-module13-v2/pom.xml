@@ -215,6 +215,7 @@
     
     <modules>
         <module>lesson2</module>
+        <module>dms</module>
         <module>ressvr</module>
 	</modules>
 

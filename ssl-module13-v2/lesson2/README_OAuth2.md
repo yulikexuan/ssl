@@ -346,8 +346,29 @@
     with credential: client id and client secret
     ```
 
+## OAuth2 Authorization Code Flow in Action
 
+1.  Get Authorization Code
 
+    ``` http://localhost:8081/oauth/authorize?client_id=dms&response_type=code ```
+    
+    Then redirect to ``` http://localhost:8082/login?code=WC6pd2 ```
+
+    Here 'WC6pd2' is authorization code for the third party application
+
+2.  Get Access Token with the Authorization Code
+
+    ``` http://localhost:8081/oauth/token ```
+    
+    [Header]
+    Content-Type=application/x-www-form-urlencoded
+    
+    [Form Body]
+    grant_type=authorization_code
+    code=WC6pd2
+    redirect_uri=http://localhost:8082/login
+    
+    
 Resources
 - [The Secure Password & Keygen Generator](https://randomkeygen.com/)
 - [Customized Implementation of ClientDetailsService](https://blog.couchbase.com/oauth-2-dynamic-client-registration/)

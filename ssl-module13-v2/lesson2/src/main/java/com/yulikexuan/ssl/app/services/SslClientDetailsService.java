@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -61,6 +62,14 @@ public class SslClientDetailsService implements ClientDetailsService {
         base.setAutoApproveScopes(scopes);
         base.setAccessTokenValiditySeconds(client.getAccessTokenValiditySeconds());
         base.setRefreshTokenValiditySeconds(client.getRefreshTokenValiditySeconds());
+
+        String redirectUris = client.getRedirectUris();
+        if (StringUtils.hasText(redirectUris)) {
+            base.setRegisteredRedirectUri(StringUtils.commaDelimitedListToSet(
+                    redirectUris));
+        }
+
+        base.setAutoApproveScopes(scopes);
 
         return base;
     }

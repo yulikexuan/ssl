@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.AffirmativeBased;
@@ -34,6 +35,7 @@ import java.util.List;
 @Slf4j
 @Configuration
 @EnableWebSecurity
+@Order(1)
 public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
     public static final String DEFAULT_SIMPLE_PW = "123456";
@@ -82,8 +84,8 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 .authenticated()
 
                 .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .formLogin()
+                .permitAll()
 
                 .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database

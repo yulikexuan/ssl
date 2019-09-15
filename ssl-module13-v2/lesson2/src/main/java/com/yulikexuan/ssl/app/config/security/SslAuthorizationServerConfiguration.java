@@ -99,7 +99,10 @@ public class SslAuthorizationServerConfiguration extends
     public void configure(AuthorizationServerSecurityConfigurer security) throws
             Exception {
 
-        security.checkTokenAccess("permitAll()");
+        security.tokenKeyAccess("permitAll()")
+                .checkTokenAccess("permitAll()")
+                .allowFormAuthenticationForClients();
+
         super.configure(security);
     }
 

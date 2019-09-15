@@ -194,25 +194,21 @@ public class DefaultLoader implements CommandLineRunner {
 
     private void loadClients() {
 
-        ClientScope readScope = ClientScope.builder().scope("PRIVILEGE_READ")
-                .build();
-
-        ClientScope writeScope = ClientScope.builder().scope("PRIVILEGE_WRITE")
-                .build();
-
-        GrantType pwGrantType = GrantType.builder().type("password").build();
-
-        GrantType refreshTokenGrantType = GrantType.builder()
-                .type("refresh_token")
-                .build();
-
         Client client;
         client = Client.builder().clientId("cloud")
                 .clientSecret(this.passwordEncoder.encode(CLIENT_SECRET))
-                .scope(readScope)
-                .scope(writeScope)
-                .authorizedGrantType(pwGrantType)
-                .authorizedGrantType(refreshTokenGrantType)
+                .scope(ClientScope.builder()
+                        .scope("PRIVILEGE_READ")
+                        .build())
+                .scope(ClientScope.builder()
+                        .scope("PRIVILEGE_WRITE")
+                        .build())
+                .authorizedGrantType(GrantType.builder()
+                        .type("password")
+                        .build())
+                .authorizedGrantType(GrantType.builder()
+                        .type("refresh_token")
+                        .build())
                 .accessTokenValiditySeconds(3600)
                 .refreshTokenValiditySeconds(3600 * 24)
                 .autoApprove(true)
@@ -220,7 +216,31 @@ public class DefaultLoader implements CommandLineRunner {
 
         this.sslClientDetailsService.save(client);
 
-        log.info(">>>>>>> {} clients loaded.", this.sslClientDetailsService.count());
+        Client dms;
+        dms = Client.builder().clientId("dms")
+                .clientSecret(this.passwordEncoder.encode(CLIENT_SECRET))
+                .scope(ClientScope.builder()
+                        .scope("PRIVILEGE_READ")
+                        .build())
+                .scope(ClientScope.builder()
+                        .scope("PRIVILEGE_WRITE")
+                        .build())
+                .authorizedGrantType(GrantType.builder()
+                        .type("authorization_code")
+                        .build())
+                .authorizedGrantType(GrantType.builder()
+                        .type("refresh_token")
+                        .build())
+                .redirectUris("http://localhost:8082/dms/login")
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(3600 * 24)
+                .autoApprove(true)
+                .build();
+
+        this.sslClientDetailsService.save(dms);
+
+        log.info(">>>>>>> {} clients loaded.",
+                this.sslClientDetailsService.count());
 
     }// End of  loadClients()
 

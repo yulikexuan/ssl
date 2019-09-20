@@ -15,8 +15,6 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @Slf4j
 @Configuration
 // prePostEnabled is REQUIRED!
-// The prePostEnabled property enables Spring Security pre/post annotations:
-// @PreAuthorize and @PostAuthorize
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SslMethodSecurityConfigurer extends
         GlobalMethodSecurityConfiguration {

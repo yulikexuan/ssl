@@ -144,7 +144,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .build());
 
         this.userService.saveUser(User.builder()
-                .username("bill")
+                .username("Bill Gates")
                 .email("billgates@microsoft.com")
                 .password(pw)
                 .enabled(true)
@@ -153,7 +153,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .build());
 
         this.userService.saveUser(User.builder()
-                .username("steve")
+                .username("Steve Jobs")
                 .email("stevejobs@apple.com")
                 .password(pw)
                 .enabled(true)
@@ -162,7 +162,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .build());
 
         this.userService.saveUser(User.builder()
-                .username("donald")
+                .username("Donald Trump")
                 .email("donaldtrump@usa.com")
                 .password(pw)
                 .enabled(true)
@@ -171,7 +171,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .build());
 
         this.userService.saveUser(User.builder()
-                .username("mike")
+                .username("Mike Pence")
                 .email("mikepence@usa.com")
                 .password(pw)
                 .enabled(true)
@@ -214,8 +214,6 @@ public class DefaultLoader implements CommandLineRunner {
                 .autoApprove(true)
                 .build();
 
-        this.sslClientDetailsService.save(client);
-
         Client dms;
         dms = Client.builder().clientId("dms")
                 .clientSecret(this.passwordEncoder.encode(CLIENT_SECRET))
@@ -239,8 +237,9 @@ public class DefaultLoader implements CommandLineRunner {
 
         this.sslClientDetailsService.save(dms);
 
-        log.info(">>>>>>> {} clients loaded.",
-                this.sslClientDetailsService.count());
+        this.sslClientDetailsService.save(client);
+
+        log.info(">>>>>>> {} clients loaded.", this.sslClientDetailsService.count());
 
     }// End of  loadClients()
 

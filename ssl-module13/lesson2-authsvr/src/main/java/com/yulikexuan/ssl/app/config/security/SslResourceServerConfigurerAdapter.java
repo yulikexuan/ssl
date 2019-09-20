@@ -1,5 +1,4 @@
-//: com.yulikexuan.ssl.app.config.security.ResourceServerConfigurerAdapter.java
-
+//: com.yulikexuan.ssl.app.config.security.SslResourceServerConfigurerAdapter.java
 
 package com.yulikexuan.ssl.app.config.security;
 

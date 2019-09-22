@@ -215,6 +215,7 @@
     
     <modules>
         <module>lesson2-authsvr</module>
+        <module>lesson2-client-dms</module>
 	</modules>
 
 </project>

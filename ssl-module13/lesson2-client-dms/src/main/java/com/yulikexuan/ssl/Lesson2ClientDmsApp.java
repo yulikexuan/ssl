@@ -1,4 +1,4 @@
-//: com.yulikexuan.ssl.DmsApp.java
+//: com.yulikexuan.ssl.Lesson2ClientDmsApp.java
 
 
 package com.yulikexuan.ssl;
@@ -14,7 +14,7 @@ import org.springframework.web.context.request.RequestContextListener;
 
 
 @SpringBootApplication
-public class DmsApp extends SpringBootServletInitializer {
+public class Lesson2ClientDmsApp extends SpringBootServletInitializer {
 
     /*
      * Spring-Boot is able to autowire Request/Session scoped beans into
@@ -37,13 +37,13 @@ public class DmsApp extends SpringBootServletInitializer {
      * DispatcherServlet and DispatcherPortlet already expose all relevant state
      *
      */
-//    @Bean
+    @Bean
     public RequestContextListener requestContextListener() {
         return new RequestContextListener();
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(DmsApp.class, args);
+        SpringApplication.run(Lesson2ClientDmsApp.class, args);
     }
 
 }///:~

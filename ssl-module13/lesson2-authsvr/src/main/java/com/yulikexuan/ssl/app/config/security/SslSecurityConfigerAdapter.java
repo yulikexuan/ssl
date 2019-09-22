@@ -84,6 +84,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin()
+                //.loginPage("/login")
                 .permitAll()
 
                 .and() // Disable X-Frame-Options in Spring Security

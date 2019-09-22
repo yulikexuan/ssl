@@ -110,8 +110,8 @@ public class SslAuthorizationServerConfiguration extends
             Exception {
 
         security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("permitAll()")
-                .allowFormAuthenticationForClients();
+                .checkTokenAccess("isAuthenticated()");
+                //.allowFormAuthenticationForClients();
 
         super.configure(security);
     }

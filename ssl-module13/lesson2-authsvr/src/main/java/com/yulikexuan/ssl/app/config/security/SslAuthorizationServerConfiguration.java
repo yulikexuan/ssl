@@ -100,8 +100,8 @@ public class SslAuthorizationServerConfiguration extends
             Exception {
 
         security.tokenKeyAccess("permitAll()")
-                .checkTokenAccess("isAuthenticated()");
-                // .allowFormAuthenticationForClients(); // This can disable "Basic Auth"
+                .checkTokenAccess("isAuthenticated()")
+                .allowFormAuthenticationForClients(); // This can disable "Basic Auth"
 
         super.configure(security);
     }

@@ -20,23 +20,20 @@ import org.springframework.security.oauth2.provider.token.ResourceServerTokenSer
 @Order(value = 0)
 public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
-//    @Autowired
-//    private ResourceServerTokenServices resourceServerTokenServices;
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
-                .antMatchers("/", "/login", "/callback")
+        http.antMatcher("/**")
+                .authorizeRequests()
+                .antMatchers("/", "/login")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
-
                 .and()
                 .logout()
                 .logoutSuccessUrl("http://localhost:8081/exit")
-
                 .and()
+
                 .csrf()
                 .disable();
     }

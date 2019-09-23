@@ -15,14 +15,14 @@ security:
     client:
       clientId: dms
       clientSecret: 2PGlgRk9Mv
-      accessTokenUri: http://localhost:8081/oauth/token
-      userAuthorizationUri: http://localhost:8081/oauth/authorize
+      accessTokenUri: http://localhost:8081/ums/oauth/token
+      userAuthorizationUri: http://localhost:8081/ums/oauth/authorize
       clientAuthenticationScheme: form
     resource:
-      userInfoUri: http://localhost:8081/api/users/me
+      userInfoUri: http://localhost:8081/ums/api/users/me
       # preferTokenInfo: false
       jwt:
-        keyUri: http://localhost:8081/oauth/token
+        keyUri: http://localhost:8081/ums/oauth/token
         keyValue: 6264BB136A72A461C3ACCFB2FC1BF
 
 logging:

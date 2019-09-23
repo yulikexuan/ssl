@@ -31,7 +31,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 .authenticated()
                 .and()
                 .logout()
-                .logoutSuccessUrl("http://localhost:8081/exit")
+                .logoutSuccessUrl("http://localhost:8081/ums/exit")
                 .and()
 
                 .csrf()

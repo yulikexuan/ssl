@@ -12,14 +12,16 @@ import org.springframework.stereotype.Component;
 
 
 @Component
-@Mapper(uses = DateMapper.class, componentModel = "default")
+@Mapper(uses = {DateMapper.class, IRoleMapper.class}, componentModel = "default")
 public interface IUserMapper {
 
     IUserMapper INSTANCE = Mappers.getMapper(IUserMapper.class);
 
     @Mapping(target = "passwordConfirmation", ignore = true)
+    @Mapping(source = "roles", target = "roleDtos")
     UserDto userToUserDto(User user);
 
+    @Mapping(source = "roleDtos", target = "roles")
     User userDtoToUser(UserDto userDto);
 
 }///:~

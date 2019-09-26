@@ -29,6 +29,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .anyRequest()
                 .authenticated()
+
                 .and()
                 .logout()
                 .logoutSuccessUrl("http://localhost:8081/ums/exit")

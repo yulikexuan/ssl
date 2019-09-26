@@ -617,7 +617,7 @@
 1.  Get Authorization Code
 
     The url to get authorization code from a browser
-    ``` http://localhost:8081/oauth/authorize?client_id=dms&response_type=code ```
+    ``` http://localhost:8081/ums/oauth/authorize?client_id=dms&response_type=code ```
     
     Then if having redirect setted up, we will be redirected to
     ``` http://localhost:8082/login?code=WC6pd2 ``` 
@@ -626,7 +626,7 @@
 
 2.  Get Access Token with the Authorization Code
 
-    ``` http://localhost:8081/oauth/token ```
+    ``` http://localhost:8081/ums/oauth/token ```
     
     [Header]
     Content-Type=application/x-www-form-urlencoded

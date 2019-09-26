@@ -38,7 +38,7 @@ public class Role {
                     referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id",
                     referencedColumnName = "id"))
-    private Set<Privilege> privileges = new HashSet<>();;
+    private Set<Privilege> privileges = new HashSet<>();
 
     public Collection<String> getAllAuthorityNames() {
         Collection<String> names = this.getPrivileges().stream()

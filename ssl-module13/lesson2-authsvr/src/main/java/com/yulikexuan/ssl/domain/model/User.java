@@ -47,7 +47,7 @@ public class User {
                     referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id",
                     referencedColumnName = "id"))
-    private Set<Role> roles = new HashSet<>();;
+    private Set<Role> roles = new HashSet<>();
 
     public Set<Role> getRoles() {
         return Optional.ofNullable(this.roles)

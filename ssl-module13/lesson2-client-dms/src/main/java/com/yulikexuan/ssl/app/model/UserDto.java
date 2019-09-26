@@ -5,7 +5,6 @@ package com.yulikexuan.ssl.app.model;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.yulikexuan.ssl.domain.model.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

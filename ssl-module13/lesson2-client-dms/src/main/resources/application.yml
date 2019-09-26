@@ -24,10 +24,3 @@ security:
       jwt:
         keyUri: http://localhost:8081/ums/oauth/token
         keyValue: 6264BB136A72A461C3ACCFB2FC1BF
-
-logging:
-  level:
-    org:
-      apache:
-        tomcat: INFO
-        catalina: INFO

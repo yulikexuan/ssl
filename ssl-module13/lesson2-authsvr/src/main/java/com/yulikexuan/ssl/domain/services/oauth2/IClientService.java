@@ -20,4 +20,6 @@ public interface IClientService {
 
     Client save(Client client);
 
+    Optional<String> getClientHomeUri(String requestReferrer);
+
 }///:~

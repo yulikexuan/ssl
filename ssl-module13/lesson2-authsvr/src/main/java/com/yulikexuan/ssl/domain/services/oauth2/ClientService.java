@@ -49,4 +49,23 @@ public class ClientService implements IClientService {
         return this.clientDetailsRepository.save(client);
     }
 
+    @Override
+    public Optional<String> getClientHomeUri(String requestReferrer) {
+
+        String clientId = this.findAllClientDetails().stream()
+                .map(Client::getClientId)
+                .filter(cid -> requestReferrer.contains("/" + cid + "/"))
+                .findAny()
+                .orElseThrow();
+
+        String homeUri = this.getClientHomeUri(requestReferrer, clientId);
+
+        return Optional.empty();
+    }
+
+    private String getClientHomeUri(String requestReferrer, String clientId) {
+        return requestReferrer.substring(0,
+                requestReferrer.indexOf(clientId) + clientId.length());
+    }
+
 }///:~

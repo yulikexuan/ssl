@@ -236,10 +236,10 @@ public class DefaultLoader implements CommandLineRunner {
                 .build();
 
         this.sslClientDetailsService.save(dms);
-
         this.sslClientDetailsService.save(client);
 
-        log.info(">>>>>>> {} clients loaded.", this.sslClientDetailsService.count());
+        log.info(">>>>>>> {} clients loaded.",
+                this.sslClientDetailsService.count());
 
     }// End of  loadClients()
 

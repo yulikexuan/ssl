@@ -13,7 +13,13 @@
 	<div class="col-sm-12">
 		<a class="pull-right" href="/dms/logout">Logout</a>
 		<h2>DMS Secured Page</h2>
-		Welcome to DMS, <span th:text="${#authentication.name}">Name</span>!
+		<br/>
+		<h4>
+			Welcome to DMS,
+			<a href="/dms/authentication">
+				<span th:text="${#authentication.name}">Name</span>!
+			</a>
+		</h4>
 	</div>
 </div>
 

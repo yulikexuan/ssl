@@ -21,5 +21,6 @@ public class SslOAuth2AuthenticationDto {
     private String tokenValue;
     private String tokenType;
     private String sessionId;
+    private String organization;
 
 }///:~

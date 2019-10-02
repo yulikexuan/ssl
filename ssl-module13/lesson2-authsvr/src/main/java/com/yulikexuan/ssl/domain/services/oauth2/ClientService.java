@@ -60,7 +60,7 @@ public class ClientService implements IClientService {
 
         String homeUri = this.getClientHomeUri(requestReferrer, clientId);
 
-        return Optional.empty();
+        return Optional.ofNullable(homeUri);
     }
 
     private String getClientHomeUri(String requestReferrer, String clientId) {

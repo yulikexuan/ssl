@@ -11,8 +11,10 @@ import com.yulikexuan.ssl.domain.services.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -28,13 +30,16 @@ public class UserController {
     private final IUserMapper userMapper;
     private final IUserListMapper userListMapper;
     private final PasswordEncoder passwordEncoder;
+    private final TokenStore tokenStore;
 
     @Autowired
     public UserController(IUserService userService,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          TokenStore tokenStore) {
 
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
+        this.tokenStore = tokenStore;
         this.userMapper = IUserMapper.INSTANCE;
         this.userListMapper = IUserListMapper.INSTANCE;
     }
@@ -53,16 +58,25 @@ public class UserController {
 
         SslOAuth2AuthenticationDto authenticationDto = null;
         if (OAuth2Authentication.class.isInstance(principal)) {
-            OAuth2Authentication authentication =
+            final OAuth2Authentication authentication =
                     (OAuth2Authentication) principal;
             OAuth2AuthenticationDetails authDetails =
                     (OAuth2AuthenticationDetails) authentication.getDetails();
+
+            String tokenValue = authDetails.getTokenValue();
+            OAuth2AccessToken accessToken = this.tokenStore.readAccessToken(
+                    tokenValue);
+
+            String organization = (String)accessToken.getAdditionalInformation()
+                    .get("organization");
+
             authenticationDto = SslOAuth2AuthenticationDto.builder()
                     .userDto(userDto)
                     .authenticated(authentication.isAuthenticated())
                     .sessionId(authDetails.getSessionId())
                     .tokenType(authDetails.getTokenType())
-                    .tokenValue(authDetails.getTokenValue())
+                    .tokenValue(tokenValue)
+                    .organization(organization)
                     .build();
         } else {
             authenticationDto = SslOAuth2AuthenticationDto.builder()

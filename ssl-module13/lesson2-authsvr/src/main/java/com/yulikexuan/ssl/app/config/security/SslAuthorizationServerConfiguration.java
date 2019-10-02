@@ -20,9 +20,13 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
+import org.springframework.security.oauth2.provider.token.TokenEnhancer;
+import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+
+import java.util.List;
 
 
 @Configuration
@@ -75,13 +79,25 @@ public class SslAuthorizationServerConfiguration extends
         return tokenServices;
     }
 
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new SslTokenEnhancer();
+    }
+
     // Configuration:
 
     @Override
     public void configure(final AuthorizationServerEndpointsConfigurer endpoints)
             throws Exception {
 
+        JwtAccessTokenConverter tokenConverter = this.accessTokenConverter();
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        List<TokenEnhancer> tokenEnhancers =
+                List.of(this.tokenEnhancer(), tokenConverter);
+        tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
+
         endpoints.tokenStore(this.tokenStore())
+                .tokenEnhancer(tokenEnhancerChain)
                 .authenticationManager(this.authenticationManager)
                 .userDetailsService(this.userDetailsService)
                 .accessTokenConverter(this.accessTokenConverter())

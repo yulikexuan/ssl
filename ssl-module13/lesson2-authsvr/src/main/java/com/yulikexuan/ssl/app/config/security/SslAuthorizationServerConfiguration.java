@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
 
 import java.util.List;
 
@@ -34,13 +36,16 @@ import java.util.List;
 public class SslAuthorizationServerConfiguration extends
         AuthorizationServerConfigurerAdapter {
 
+    public static final String KEY_STORE_ALIAS = "sslsso";
+    public static final String KEY_STORE_FILE_NAME = "sslsso.jks";
+
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
     private final ClientDetailsService clientDetailsService;
     private final UserDetailsService userDetailsService;
 
-    @Value("${app.security.oauth2.jwt.signingkey}")
-    private String signingKey = "6264BB136A72A461C3ACCFB2FC1BF";
+//    @Value("${app.security.oauth2.jwt.signingkey}")
+//    private String signingKey = "6264BB136A72A461C3ACCFB2FC1BF";
 
     @Autowired
     public SslAuthorizationServerConfiguration(
@@ -59,9 +64,19 @@ public class SslAuthorizationServerConfiguration extends
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
+
         final JwtAccessTokenConverter accessTokenConverter =
                 new JwtAccessTokenConverter();
-        accessTokenConverter.setSigningKey(signingKey);
+
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
+                new ClassPathResource(KEY_STORE_FILE_NAME),
+                KEY_STORE_ALIAS.toCharArray());
+
+        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair(
+                KEY_STORE_ALIAS));
+
+        // accessTokenConverter.setSigningKey(signingKey);
+
         return accessTokenConverter;
     }
 

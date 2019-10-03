@@ -19,9 +19,6 @@ app:
   security:
     permit:
       urls: /h2-console/**,/login**,/oauth/authorize**
-    oauth2:
-      jwt:
-        signingkey: 6264BB136A72A461C3ACCFB2FC1BF
 logging:
   level:
     org:

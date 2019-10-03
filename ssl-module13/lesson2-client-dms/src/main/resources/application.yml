@@ -22,5 +22,6 @@ security:
       userInfoUri: http://localhost:8081/ums/api/users/me
       # preferTokenInfo: false
       jwt:
-        keyUri: http://localhost:8081/ums/oauth/token
-        keyValue: 6264BB136A72A461C3ACCFB2FC1BF
+        public-key-location: classpath:public.txt
+#        keyUri: http://localhost:8081/ums/oauth/token
+#        keyValue: 6264BB136A72A461C3ACCFB2FC1BF

@@ -620,7 +620,7 @@
     ``` http://localhost:8081/ums/oauth/authorize?client_id=dms&response_type=code ```
     
     Then if having redirect setted up, we will be redirected to
-    ``` http://localhost:8082/login?code=WC6pd2 ``` 
+    ``` http://localhost:8082/dms/login?code=WC6pd2 ``` 
 
     Here 'WC6pd2' is authorization code for the third party application
 
@@ -636,7 +636,61 @@
     code=WC6pd2
     redirect_uri=http://localhost:8082/login
     
+
+## Asymmetric KeyPair
+
+1.  Generate JKS Java KeyStore File
+    ``` 
+    keytool -genkeypair -alias sslsso -keyalg RSA -keypass sslsso -keystore sslsso.jks -storepass sslsso
+    ```
+    Make sure keypass and storepass are the same
     
+2.  Export Public Key
+    ``` 
+    keytool -list -rfc --keystore sslsso.jks | openssl x509 -inform pem -pubkey 
+    ```
+    or 
+    ``` 
+    keytool -list -rfc --keystore sslsso.jks | openssl x509 -inform pem -pubkey -noout
+    ```
+    
+    We take only our Public key and copy it to our resource server 
+    src/main/resources/public.txt
+
+3.  Maven Config
+
+    a. Do not make the JKS file to be picked up by the maven filtering process
+    b. Make sure that the JKS file is added to application classpath via Spring
+       Boot Maven Plugin - addResources
+       
+    ``` 
+    <build>
+
+        <plugins>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <addResources>true</addResources>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>jks</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
+
+        </plugins>
+
+    </build>
+    ```
+
 Resources
 - [The Secure Password & Keygen Generator](https://randomkeygen.com/)
 - [Customized Implementation of ClientDetailsService](https://blog.couchbase.com/oauth-2-dynamic-client-registration/)

@@ -635,7 +635,16 @@
     grant_type=authorization_code
     code=WC6pd2
     redirect_uri=http://localhost:8082/login
-    
+
+
+## Custom Claims in the Token
+
+1.  Config Authorization Server
+
+
+2.  Access Extra Claims on Resource Server
+
+
 
 ## Asymmetric KeyPair
 
@@ -691,7 +700,61 @@
     </build>
     ```
 
+4.  Config Authorization Server
+    
+    a. Configure ```JwtAccessTokenConverter``` to use the KeyPair from sslsso.jks
+    ``` 
+    @Bean
+    public JwtAccessTokenConverter accessTokenConverter() {
+
+        final JwtAccessTokenConverter accessTokenConverter =
+                new JwtAccessTokenConverter();
+
+        KeyStoreKeyFactory keyStoreKeyFactory = new KeyStoreKeyFactory(
+                new ClassPathResource(KEY_STORE_FILE_NAME),
+                KEY_STORE_ALIAS.toCharArray());
+
+        accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair(
+                KEY_STORE_ALIAS));
+
+        return accessTokenConverter;
+    }
+    ```
+
+5.  Config the sso client
+
+    a. Add public key file, ```sslkey.pub``` , to ```resource``` package of the client
+
+    b. Remove ```security.oauth2.resource.jwt.keyUri``` and ```security.oauth2.resource.jwt.keyValue``` from application.yml
+    
+    c. Add ```security.oauth2.resource.jwt.plublic-key-location: classpath:sslkey.pub``` to application.yml
+
+    ``` 
+    security:
+      oauth2:
+        sso:
+          loginPage: /login
+        client:
+          clientId: dms
+          clientSecret: 2PGlgRk9Mv
+          accessTokenUri: http://localhost:8081/ums/oauth/token
+          userAuthorizationUri: http://localhost:8081/ums/oauth/authorize
+          clientAuthenticationScheme: form
+        resource:
+          userInfoUri: http://localhost:8081/ums/api/users/me
+          # preferTokenInfo: false
+          jwt:
+            public-key-location: classpath:sslkey.pub
+    #        keyUri: http://localhost:8081/ums/oauth/token
+    #        keyValue: 6264BB136A72A461C3ACCFB2FC1BF
+    ```
+
+
 Resources
+- [Spring Security Reference Html5](https://docs.spring.io/spring-security/site/docs/current/reference/html5/)
+- [Spring Security Reference PDF](https://docs.spring.io/spring-security/site/docs/current/reference/pdf/spring-security-reference.pdf)
+- [Simple Single Sign-On with Spring Security OAuth2](https://www.baeldung.com/sso-spring-security-oauth2)
+- [Using JWT with Spring Security OAuth](https://www.baeldung.com/spring-security-oauth-jwt)
 - [The Secure Password & Keygen Generator](https://randomkeygen.com/)
 - [Customized Implementation of ClientDetailsService](https://blog.couchbase.com/oauth-2-dynamic-client-registration/)
 - [Enable #oauth2 security expressions](https://stackoverflow.com/questions/29797721/oauth2-security-expressions-on-method-level)

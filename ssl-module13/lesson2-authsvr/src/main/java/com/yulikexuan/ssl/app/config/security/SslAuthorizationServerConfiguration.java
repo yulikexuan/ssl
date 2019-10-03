@@ -44,9 +44,6 @@ public class SslAuthorizationServerConfiguration extends
     private final ClientDetailsService clientDetailsService;
     private final UserDetailsService userDetailsService;
 
-//    @Value("${app.security.oauth2.jwt.signingkey}")
-//    private String signingKey = "6264BB136A72A461C3ACCFB2FC1BF";
-
     @Autowired
     public SslAuthorizationServerConfiguration(
             AuthenticationManager authenticationManager,
@@ -74,8 +71,6 @@ public class SslAuthorizationServerConfiguration extends
 
         accessTokenConverter.setKeyPair(keyStoreKeyFactory.getKeyPair(
                 KEY_STORE_ALIAS));
-
-        // accessTokenConverter.setSigningKey(signingKey);
 
         return accessTokenConverter;
     }

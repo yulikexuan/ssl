@@ -31,29 +31,6 @@ import java.io.IOException;
 @Order(value = 0)
 public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
-    private final SslAccessTokenConverter sslAccessTokenConverter;
-
-    @Autowired
-    public SslSecurityConfigerAdapter(
-            SslAccessTokenConverter sslAccessTokenConverter) {
-
-        this.sslAccessTokenConverter = sslAccessTokenConverter;
-    }
-
-    @Bean
-    public TokenStore tokenStore() {
-        return new JwtTokenStore(this.accessTokenConverter());
-    }
-
-    @Bean
-    public JwtAccessTokenConverter accessTokenConverter() {
-
-        JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setAccessTokenConverter(this.sslAccessTokenConverter);
-
-        return converter;
-    }
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
 

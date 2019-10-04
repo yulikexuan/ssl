@@ -44,8 +44,8 @@ public class UserController {
         this.userListMapper = IUserListMapper.INSTANCE;
     }
 
-    @GetMapping("/me")
-    public SslOAuth2AuthenticationDto user(final Principal principal) {
+    @GetMapping("/current")
+    public SslOAuth2AuthenticationDto current(final Principal principal) {
 
         User user = this.userService.findUserByUsername(principal.getName())
                 .orElseGet(() -> {
@@ -71,6 +71,7 @@ public class UserController {
                     .get("organization");
 
             authenticationDto = SslOAuth2AuthenticationDto.builder()
+                    .name(principal.getName())
                     .userDto(userDto)
                     .authenticated(authentication.isAuthenticated())
                     .sessionId(authDetails.getSessionId())
@@ -85,6 +86,17 @@ public class UserController {
         }
 
         return authenticationDto;
+    }
+
+    /*
+     * Reserved by Spring Boot OAuth2 Sso Authentication
+     *
+     * See lesson2-client-dms/src/main/resources/application.yml
+     * security.oauth2.resource.userInfoUri: http://localhost:8081/ums/api/users/me
+     */
+    @GetMapping("/me")
+    public Principal user(final Principal principal) {
+        return principal;
     }
 
     @GetMapping

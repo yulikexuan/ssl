@@ -641,9 +641,90 @@
 
 1.  Config Authorization Server
 
+    a. Define a custom ``` TokenEnhancer ```
+       Add an extra field “organization” to Access Token – with this SslTokenEnhancer
+    
+    ``` 
+    public class SslTokenEnhancer implements TokenEnhancer {
+    
+        @Override
+        public OAuth2AccessToken enhance(OAuth2AccessToken accessToken,
+                                         OAuth2Authentication authentication) {
+    
+            Map<String, Object> additionalInfo = Map.of("organization",
+                    authentication.getName() + randomAlphabetic(4));
+    
+            ((DefaultOAuth2AccessToken) accessToken).setAdditionalInformation(
+                    additionalInfo);
+    
+            return accessToken;
+        }
+    
+    }///:~
+    ```
+    
+    b. Wire SslTokenEnhancer into Authoriztion Server's ``` SslAuthorizationServerConfiguration ```
+    
+    ``` 
+    @Bean
+    public TokenEnhancer tokenEnhancer() {
+        return new SslTokenEnhancer();
+    }
+    
+    @Override
+    public void configure(final AuthorizationServerEndpointsConfigurer endpoints)
+            throws Exception {
 
-2.  Access Extra Claims on Resource Server
+        JwtAccessTokenConverter tokenConverter = this.accessTokenConverter();
+        TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
+        List<TokenEnhancer> tokenEnhancers =
+                List.of(this.tokenEnhancer(), tokenConverter);
+        tokenEnhancerChain.setTokenEnhancers(tokenEnhancers);
 
+        endpoints.tokenStore(this.tokenStore())
+                .tokenEnhancer(tokenEnhancerChain)
+                .authenticationManager(this.authenticationManager)
+                .userDetailsService(this.userDetailsService)
+                .accessTokenConverter(this.accessTokenConverter())
+                .allowedTokenEndpointRequestMethods(HttpMethod.POST);
+    }
+    ```
+
+2.  Access extra claims on sso client
+
+    ``` 
+    public class AuthenticationController {
+    
+        private UserService userService;
+        private OAuth2RestTemplate restTemplate;
+    
+        @Autowired
+        public AuthenticationController(UserService userService,
+                                        OAuth2RestTemplate restTemplate) {
+    
+            this.userService = userService;
+            this.restTemplate = restTemplate;
+        }
+    
+        @GetMapping("/authentication")
+        public ModelAndView getAuthentication(final Principal authentication) {
+    
+            log.info(">>>>>>> Organization: {}",
+                    this.restTemplate.getAccessToken().getAdditionalInformation()
+                            .get("organization"));
+    
+            SslOAuth2AuthenticationDto principal =
+                    this.userService.getAuthentication();
+    
+            return new ModelAndView("currentUserPage",
+                    "principal", principal);
+        }
+    
+    }///:~
+    ```
+
+
+3.  [Access Extra Claims on Resource Server](https://www.baeldung.com/spring-security-oauth-jwt)
 
 
 ## Asymmetric KeyPair
@@ -749,8 +830,19 @@
     #        keyValue: 6264BB136A72A461C3ACCFB2FC1BF
     ```
 
+### Debug
 
-Resources
+For Authorization Server: 
+``` 
+OAuth2AuthenticationProcessingFilter 
+```
+For Sso Client: 
+``` 
+OAuth2ClientAuthenticationProcessingFilter 
+```
+
+
+### Resources
 - [Spring Security Reference Html5](https://docs.spring.io/spring-security/site/docs/current/reference/html5/)
 - [Spring Security Reference PDF](https://docs.spring.io/spring-security/site/docs/current/reference/pdf/spring-security-reference.pdf)
 - [Simple Single Sign-On with Spring Security OAuth2](https://www.baeldung.com/sso-spring-security-oauth2)

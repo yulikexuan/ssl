@@ -14,6 +14,9 @@ import java.util.Map;
 import static org.apache.commons.lang3.RandomStringUtils.randomAlphabetic;
 
 
+/*
+ * Add an extra field “organization” to Access Token – with this SslTokenEnhancer
+ */
 public class SslTokenEnhancer implements TokenEnhancer {
 
     @Override

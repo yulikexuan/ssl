@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Spring Security SSO</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+</head>
+
+<body>
+
+<div class="container">
+    <div class="col-sm-12">
+        <a class="pull-right" href="/dms/logout">Logout</a>
+        <h2>The Current User of DMS</h2>
+        <div>
+            <span>Username:</span>
+            <span th:text="${principal.userDto.username}">Trunmp</span>
+        </div>
+        <div>
+            <span>Organization:</span>
+            <span th:text="${principal.organization}">Tecsys</span>
+        </div>
+        <div>
+            <span>Token:</span>
+            <span th:text="${principal.tokenValue}">0123456789</span>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

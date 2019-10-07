@@ -1,0 +1,27 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  port: 8081
+  servlet:
+    context-path: /ums
+spring:
+  thymeleaf:
+    cache: false
+#  jpa:
+#    show-sql: true
+#    properties:
+#      hibernate:
+#        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: "/h2-console"
+app:
+  security:
+    permit:
+      urls: /h2-console/**,/login**,/oauth/authorize**
+logging:
+  level:
+    org:
+      apache:
+        tomcat: INFO
+        catalina: INFO

@@ -216,6 +216,7 @@
     <modules>
         <module>authsvr</module>
         <module>client-dms</module>
+        <module>client-wms</module>
 	</modules>
 
 </project>

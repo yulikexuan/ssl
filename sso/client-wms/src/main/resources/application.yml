@@ -1,8 +1,8 @@
 # Allow Thymeleaf templates to be reloaded at dev time
 server:
-  port: 8082
+  port: 8084
   servlet:
-    context-path: /dms
+    context-path: /wms
     
 spring:
   thymeleaf:
@@ -13,7 +13,7 @@ security:
     sso:
       loginPage: /login
     client:
-      clientId: dms
+      clientId: wms
       clientSecret: 2PGlgRk9Mv
       accessTokenUri: http://localhost:8081/ums/oauth/token
       userAuthorizationUri: http://localhost:8081/ums/oauth/authorize

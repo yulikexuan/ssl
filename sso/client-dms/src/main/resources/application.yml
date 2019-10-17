@@ -5,6 +5,9 @@ server:
     context-path: /dms
     
 spring:
+  mvc:
+    favicon:
+      enabled: true
   thymeleaf:
     cache: false
 

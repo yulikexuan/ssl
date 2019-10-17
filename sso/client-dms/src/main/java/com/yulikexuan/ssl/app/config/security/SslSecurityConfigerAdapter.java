@@ -36,7 +36,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
         http.antMatcher("/**")
                 .authorizeRequests()
-                .antMatchers("/", "/login")
+                .antMatchers("/", "/login", "/favicon.ico")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

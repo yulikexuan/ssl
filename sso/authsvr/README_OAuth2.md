@@ -612,31 +612,6 @@
             signingkey: 6264BB136A72A461C3ACCFB2FC1BF
     ```
     
-## OAuth2 Authorization Code Flow in Practice
-
-1.  Get Authorization Code
-
-    The url to get authorization code from a browser
-    ``` http://localhost:8081/ums/oauth/authorize?client_id=dms&response_type=code ```
-    
-    Then if having redirect setted up, we will be redirected to
-    ``` http://localhost:8082/dms/login?code=WC6pd2 ``` 
-
-    Here 'WC6pd2' is authorization code for the third party application
-
-2.  Get Access Token with the Authorization Code
-
-    ``` http://localhost:8081/ums/oauth/token ```
-    
-    [Header]
-    Content-Type=application/x-www-form-urlencoded
-    
-    [Form Body]
-    grant_type=authorization_code
-    code=WC6pd2
-    redirect_uri=http://localhost:8082/login
-
-
 ## Custom Claims in the Token
 
 1.  Config Authorization Server
@@ -840,6 +815,34 @@ For Sso Client:
 ``` 
 OAuth2ClientAuthenticationProcessingFilter 
 ```
+
+## Create OAuth2 Resource Server for SSO
+
+1.  ``` converter.setVerifierKey(sslkey); ```
+2.  ``` tokenServices ``` should be annotated with @Bean and @Primary
+## OAuth2 Authorization Code Flow in Practice
+
+1.  Get Authorization Code
+
+    The url to get authorization code from a browser
+    ``` http://localhost:8081/ums/oauth/authorize?client_id=dms&response_type=code ```
+    
+    Then if having redirect setted up, we will be redirected to
+    ``` http://localhost:8082/dms/login?code=WC6pd2 ``` 
+
+    Here 'WC6pd2' is authorization code for the third party application
+
+2.  Get Access Token with the Authorization Code
+
+    ``` http://localhost:8081/ums/oauth/token ```
+    
+    [Header]
+    Content-Type=application/x-www-form-urlencoded
+    
+    [Form Body]
+    grant_type=authorization_code
+    code=WC6pd2
+    redirect_uri=http://localhost:8082/login
 
 
 ### Resources

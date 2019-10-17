@@ -6,10 +6,10 @@
     <modelVersion>4.0.0</modelVersion>
     
     <description>
-        SSO-Client with OAuth2 Authorization Server
+        Set up JWT-OAuth2 Resource Server with Spring Security
     </description>
     
-    <name>client-wms</name>
+    <name>resource-server-currency</name>
 
     <parent>
         <groupId>com.yulikexuan.ssl</groupId>
@@ -18,19 +18,15 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>client-wms</artifactId>
+    <artifactId>res-svr-curr</artifactId>
     <packaging>jar</packaging>
 
     <dependencies>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.thymeleaf.extras</groupId>
-            <artifactId>thymeleaf-extras-springsecurity5</artifactId>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
         </dependency>
 
     </dependencies>

@@ -3,8 +3,6 @@ server:
   servlet:
     context-path: /currency
 security:
-  basic:
-    enabled: false
   oauth2:
     resource:
       jwt:

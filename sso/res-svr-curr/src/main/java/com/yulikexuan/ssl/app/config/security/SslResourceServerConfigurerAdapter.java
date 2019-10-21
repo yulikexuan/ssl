@@ -6,11 +6,10 @@ package com.yulikexuan.ssl.app.config.security;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -20,6 +19,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -36,15 +36,15 @@ import java.nio.charset.Charset;
 public class SslResourceServerConfigurerAdapter
         extends ResourceServerConfigurerAdapter {
 
-    private final Environment environment;
-    private final SslAccessTokenConverter sslAccessTokenConverter;
+    @Value("classpath:sslkey.pub")
+    Resource sslPublicKeyResource;
+
+    private final DefaultAccessTokenConverter sslAccessTokenConverter;
 
     @Autowired
     public SslResourceServerConfigurerAdapter(
-            Environment environment,
-            SslAccessTokenConverter sslAccessTokenConverter) {
+            DefaultAccessTokenConverter sslAccessTokenConverter) {
 
-        this.environment = environment;
         this.sslAccessTokenConverter = sslAccessTokenConverter;
     }
 
@@ -52,15 +52,22 @@ public class SslResourceServerConfigurerAdapter
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
+
         final JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        Resource resource = new ClassPathResource("sslkey.pub");
+
+        // In case there is additional custom claims in JWT token
+        converter.setAccessTokenConverter(this.sslAccessTokenConverter);
+
+        // Set up public key as verifier key into the jwt access token converter
         String sslkey = null;
         try {
-            sslkey = IOUtils.toString(resource.getInputStream(), Charset.forName("UTF-8"));
+            sslkey = IOUtils.toString(sslPublicKeyResource.getInputStream(),
+                    Charset.forName("UTF-8"));
         } catch (final IOException ioe) {
             throw new RuntimeException(ioe);
         }
         converter.setVerifierKey(sslkey);
+
         return converter;
     }
 
@@ -69,6 +76,18 @@ public class SslResourceServerConfigurerAdapter
         return new JwtTokenStore(this.accessTokenConverter());
     }
 
+    /*
+     * The DefaultTokenServices implements AuthorizationServerTokenServices,
+     * ResourceServerTokenServices, ConsumerTokenServices, InitializingBean
+     *
+     * The DefaultTokenServices is a base implementation for token services
+     * using random UUID values for the access token and refresh token values.
+     * The main extension point for customizations is the TokenEnhancer which
+     * will be called after the access and refresh tokens have been generated
+     * but before they are stored.
+     * Persistence is delegated to a TokenStore implementation and customization
+     * of the access token to a TokenEnhancer
+     */
     @Bean
     @Primary
     public DefaultTokenServices tokenServices() {
@@ -110,18 +129,6 @@ public class SslResourceServerConfigurerAdapter
                 .and()
                 .csrf()
                 .disable();
-
-//        http.authorizeRequests()
-//                .antMatchers("/api/welcome")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .csrf()
-//                .disable();
     }
 
 

@@ -5,9 +5,6 @@
                              
     <modelVersion>4.0.0</modelVersion>
     
-    <description>OAuth2 - Authorization Code Flow</description>
-    <name>lesson2-authorization-server</name>
-
     <parent>
         <groupId>com.yulikexuan.ssl</groupId>
         <artifactId>ssl-module13</artifactId>
@@ -15,9 +12,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     
-    <artifactId>lesson2-authsvr</artifactId>
+    <artifactId>lesson3-authsvr</artifactId>
     <packaging>jar</packaging>
 
+    <name>lesson3-authorization-server</name>
+    <description>OAuth2 - Client Credentials Flow</description>
+    
     <build>
 
         <plugins>

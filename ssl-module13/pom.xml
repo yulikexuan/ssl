@@ -13,13 +13,13 @@
 
 	<groupId>com.yulikexuan.ssl</groupId>
 	<artifactId>ssl-module13</artifactId>
-	<version>201903</version>
+	<version>201904</version>
 	<packaging>pom</packaging>
     
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.1.8.RELEASE</version>
+        <version>2.1.9.RELEASE</version>
         <relativePath /> <!-- lookup parent from repository -->
     </parent>
     
@@ -44,6 +44,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.security.oauth.boot</groupId>
+            <artifactId>spring-security-oauth2-autoconfigure</artifactId>
+            <version>2.1.9.RELEASE</version>
         </dependency>
 
         <!-- Java 12 -->
@@ -96,6 +102,11 @@
             <version>28.0-jre</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+
         <!-- web -->
 
         <dependency>
@@ -135,6 +146,13 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.rest-assured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>3.0.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
@@ -216,6 +234,7 @@
     <modules>
         <module>lesson2-authsvr</module>
         <module>lesson2-client-dms</module>
+        <module>lesson3-authsvr</module>
 	</modules>
 
 </project>

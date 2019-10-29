@@ -41,12 +41,15 @@ public class SslResourceServerConfigurerAdapter extends
          * https://stackoverflow.com/questions/29797721/oauth2-security-expressions-on-method-level
          */
         http.requestMatchers()
-                // Restrict config only to "/api/users/**"
-                .antMatchers("/api/users/**")
+                // Restrict config only to "/api/**"
+                .antMatchers("/api/**")
                 .and()
                 // Allows restricting access based upon the HttpServletRequest using
                 // Allows specifying that URLs are secured by an arbitrary expression
                 .authorizeRequests()
+
+                .antMatchers(HttpMethod.GET,"/api/restassured/**")
+                .access("#oauth2.hasScope('PRIVILEGE_READ')")
 
                 .antMatchers(HttpMethod.GET,"/api/users/**")
                 .access("#oauth2.hasScope('PRIVILEGE_READ')")

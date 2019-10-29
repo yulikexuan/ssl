@@ -257,9 +257,24 @@ public class DefaultLoader implements CommandLineRunner {
                 .autoApprove(true)
                 .build();
 
+        Client sslReadOnlyClient;
+        sslReadOnlyClient = Client.builder().clientId("sslReadOnlyClient")
+                .clientSecret(this.passwordEncoder.encode(CLIENT_SECRET))
+                .scope(ClientScope.builder()
+                        .scope("PRIVILEGE_READ")
+                        .build())
+                .authorizedGrantType(GrantType.builder()
+                        .type("client_credentials")
+                        .build())
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(3600 * 24)
+                .autoApprove(true)
+                .build();
+
         this.sslClientDetailsService.save(dms);
         this.sslClientDetailsService.save(client);
         this.sslClientDetailsService.save(sslClient);
+        this.sslClientDetailsService.save(sslReadOnlyClient);
 
         log.info(">>>>>>> {} clients loaded.",
                 this.sslClientDetailsService.count());

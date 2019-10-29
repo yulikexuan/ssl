@@ -5,23 +5,22 @@ package com.yulikexuan.ssl.app.config.security;
 
 
 import com.yulikexuan.ssl.app.bootstrap.DefaultLoader;
-import io.restassured.response.Response;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpStatus;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
-import static io.restassured.RestAssured.*;
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.Map;
+
+import static com.jayway.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
 
 /* JWT Sample
  * {
-        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJQUklWSUxFR0VfUkVBRCIsIlBSSVZJTEVHRV9XUklURSJdLCJvcmdhbml6YXRpb24iOiJzc2xDbGllbnRtZ29pIiwiZXhwIjoxNTcxNzUxNzU3LCJqdGkiOiJmY2IyYjFhOC0zOTQ3LTRiMDEtOTU3My0wNzQ0NDhjMTdlM2EiLCJjbGllbnRfaWQiOiJzc2xDbGllbnQifQ.URvtdF_5wyOf9lZXm999Ko5v3UcX7qf8HcsSwFAT2hugGNKOeqsdj64CCfk2E_FnkkqisjnfcH7srD5oyjd9q7h2c6nPjPJWp-BHMLvxUJS6fOWP8Rh1CmeSp5hbVzENXLdEV1fkRFFJj07nLlAmNEEIUogxY-V0KQJAj6G08aFavt5mFIfLIGtaGiyig4M8E5CYQhiv1CB7P0lbptFtultryjogftTFrpOhW14aFgCv9WAJCfXzAN2hSe2GWoXjNHmhlb_N6yMq-qKy7j83VZaP4spi4T8_gqnIbqqPlUcT2y0Du-Jkd6c_f6bvnZStmEgE24MyeHIelocQiifYpw",
+        "access_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6Wy",
         "token_type": "bearer",
         "expires_in": 3599,
         "scope": "PRIVILEGE_READ PRIVILEGE_WRITE",
@@ -35,9 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *   3.  Use Annotation: @ActiveProfiles("test") for each test java file
  *   4.  All properties defined in application.yml are still going to be applied
  */
+@Slf4j
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DisplayName("OAuth2 Authorization Server Test - ")
 class SslAuthorizationServerConfigurationIT {
+
+    static final String SSL_CLIENT_ID = "sslClient";
+    static final String SSL_READ_ONLY_CLIENT_ID = "sslReadOnlyClient";
 
     @Value("${ssl.oauth2.server.root}")
     private String oauthServerRoot;
@@ -48,43 +52,206 @@ class SslAuthorizationServerConfigurationIT {
     @Value("${ssl.oauth2.jwt.token.uri}")
     private String jwtTokenUri;
 
+    @Value("${ssl.oauth2.jwt.token.node.name}")
+    private String jwtTokenNodeName;
+
     @Value("${ssl.oauth2.jwt.token.param.name_grant_type}")
     private String grantTypeParamName;
 
     @Value("${ssl.oauth2.jwt.token.param.value_grant_type}")
     private String grantTypeParamValue;
 
-    private String tokenUrl;
+    private String tokenRequestUrl;
+    private String baseUrl;
 
     @BeforeEach
     void setUp() {
-        this.tokenUrl = String.format(this.oauthServerRoot, this.port)
-                + this.jwtTokenUri;
+        this.baseUrl = String.format(this.oauthServerRoot, this.port);
+        this.tokenRequestUrl = this.baseUrl + this.jwtTokenUri;
     }
 
-    @DisplayName("Test Getting JWT Token - ")
+    @DisplayName("Test jwt token - ")
+    @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
     @Test
     void able_To_Get_JWT_Token() {
 
         // Given
 
         // When
-        final Response response = given().auth().preemptive()
+        given().auth()
+                /*
+                 * preemptive(): Returns the preemptive authentication view.
+                 * This means that the authentication details are sent in the
+                 * request header regardless if the server has challenged for
+                 * authentication or not
+                 */
+                .preemptive()
                 .basic("sslClient", DefaultLoader.CLIENT_SECRET)
                 .with()
                 .formParam(this.grantTypeParamName, this.grantTypeParamValue)
-                .post(this.tokenUrl);
-
-        // Then
-        Assertions.assertAll(
-                "Getting JWT Token failed.",
-                () -> assertThat(response.getStatusCode())
-                        .isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath()
-                        .getString("access_token"))
-                        .isNotNull()
-        );
-
+                .post(this.tokenRequestUrl)
+                .then()
+                .log()
+                .ifValidationFails()
+                .statusCode(HttpStatus.SC_OK)
+                .body(this.jwtTokenNodeName, notNullValue())
+                .and()
+                .time(lessThan(1500L));
     }
+
+    @DisplayName("Read & Write Scopes Test - ")
+    @Nested
+    class GenericClientTest {
+
+        private String accessToken;
+
+        @BeforeEach
+        void setUp() {
+            accessToken = String.format("Bearer %1$s",
+                    getAccessToken(SSL_CLIENT_ID, DefaultLoader.CLIENT_SECRET));
+        }
+
+        @DisplayName("Client with R/W Scopes Should be able to Read - ")
+        @Test
+        void test_Client_Read_With_Read_And_Write_Scropes() {
+
+            given().header("Authorization", this.accessToken)
+                    .get(baseUrl + "/api/users/me")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body("principal", equalTo(SSL_CLIENT_ID));
+        }
+
+        @DisplayName("Client with R/W Scopes Should be able to Create New User - ")
+        @Test
+        void test_Client_Write_With_Read_And_Write_Scopes() {
+
+            // Given
+            final Map<String, String> params = getUserParams();
+
+            given().header("Authorization", this.accessToken)
+                    .formParameters(params)
+                    .post(baseUrl + "/api/users")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_CREATED);
+        }
+
+    }//: End of class GenericClientTest
+
+    @DisplayName("Read Only Client Test - ")
+    @Nested
+    class ReadOnlyClientTest {
+
+        private String accessToken;
+
+        @BeforeEach
+        void setUp() {
+            accessToken = String.format("Bearer %1$s",
+                    getAccessToken(SSL_READ_ONLY_CLIENT_ID,
+                            DefaultLoader.CLIENT_SECRET));
+        }
+
+        @DisplayName("Client with Only Read Scope Should be able to Read - ")
+        @Test
+        void test_Client_Read_With_Only_Read_Scope() {
+
+            given().header("Authorization", this.accessToken)
+                    .get(baseUrl + "/api/users/me")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body("principal", equalTo(SSL_READ_ONLY_CLIENT_ID));
+        }
+
+        @DisplayName("Client with Only Read Scope Should NOT be able to Write or Create - ")
+        @Test
+        void test_Client_Write_With_Only_Read_Scope() {
+
+            // Given
+            final Map<String, String> params = getUserParams();
+
+            // When
+            given().header("Authorization", this.accessToken)
+                    .formParameters(params)
+                    .post(baseUrl + "/api/users")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_FORBIDDEN);
+        }
+
+    }//: End of ReadOnlyClilentTest
+
+    @DisplayName("Jayway Restassured Test - ")
+    @Nested
+    class RestassuredTest {
+
+        String accessToken;
+
+        @BeforeEach
+        void setUp() {
+            accessToken = String.format("Bearer %1$s",
+                    getAccessToken(SSL_CLIENT_ID, DefaultLoader.CLIENT_SECRET));
+        }
+
+        @DisplayName("Test anonymous json root - ")
+        @Test
+        void test_Anonymous_Json_Root() {
+
+            // When
+            given().header("Authorization", accessToken)
+                    .get(baseUrl + "/api/restassured/anonymous")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .assertThat()
+                    .body("$", hasItems(1, 2, 3))
+                    .time(lessThan(500L));
+        }
+
+        @DisplayName("Test floot numbers - ")
+        @Test
+        void test_Float_Numbers() {
+
+            // When
+            given().header("Authorization", accessToken)
+                    .get(baseUrl + "/api/restassured/odd")
+                    .then()
+                    .log().ifValidationFails()
+                    .assertThat()
+                    .body("price", equalTo(1.3f))
+                    .body("ck", equalTo(12.2f))
+                    .body("name", equalTo("Odd-Data-1"))
+                    .time(lessThan(500L));
+        }
+
+    }//: End of class RestassuredTest
+
+    private String getAccessToken(String clientId, String secret) {
+
+        return given()
+                .auth()
+                .preemptive()
+                .basic(clientId, secret)
+                .with()
+                .formParam(this.grantTypeParamName, this.grantTypeParamValue)
+                .post(this.tokenRequestUrl)
+                .jsonPath()
+                .getString(this.jwtTokenNodeName);
+    }
+
+    private Map<String, String> getUserParams() {
+        return Map.of(
+                "username", "tester",
+                "email", "tester@tecsys.com",
+                "password", "123456",
+                "passwordConfirmation", "123456");
+    }
+
 
 }///:~

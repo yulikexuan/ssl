@@ -5,6 +5,8 @@ ssl:
       root: http://localhost:%1$s/ums
     jwt:
       token:
+        node:
+          name: access_token
         uri: /oauth/token
         param:
           name_grant_type: grant_type

@@ -89,6 +89,7 @@ class SslAuthorizationServerConfigurationIT {
                 .basic("sslClient", DefaultLoader.CLIENT_SECRET)
                 .with()
                 .formParam(this.grantTypeParamName, this.grantTypeParamValue)
+                .when()
                 .post(this.tokenRequestUrl)
                 .then()
                 .log()
@@ -116,6 +117,7 @@ class SslAuthorizationServerConfigurationIT {
         void test_Client_Read_With_Read_And_Write_Scropes() {
 
             given().header("Authorization", this.accessToken)
+                    .when()
                     .get(baseUrl + "/api/users/me")
                     .then()
                     .log()
@@ -133,6 +135,7 @@ class SslAuthorizationServerConfigurationIT {
 
             given().header("Authorization", this.accessToken)
                     .formParameters(params)
+                    .when()
                     .post(baseUrl + "/api/users")
                     .then()
                     .log()
@@ -160,6 +163,7 @@ class SslAuthorizationServerConfigurationIT {
         void test_Client_Read_With_Only_Read_Scope() {
 
             given().header("Authorization", this.accessToken)
+                    .when()
                     .get(baseUrl + "/api/users/me")
                     .then()
                     .log()
@@ -178,6 +182,7 @@ class SslAuthorizationServerConfigurationIT {
             // When
             given().header("Authorization", this.accessToken)
                     .formParameters(params)
+                    .when()
                     .post(baseUrl + "/api/users")
                     .then()
                     .log()
@@ -205,6 +210,7 @@ class SslAuthorizationServerConfigurationIT {
 
             // When
             given().header("Authorization", accessToken)
+                    .when()
                     .get(baseUrl + "/api/restassured/anonymous")
                     .then()
                     .log()
@@ -220,6 +226,7 @@ class SslAuthorizationServerConfigurationIT {
 
             // When
             given().header("Authorization", accessToken)
+                    .when()
                     .get(baseUrl + "/api/restassured/odd")
                     .then()
                     .log().ifValidationFails()
@@ -240,6 +247,7 @@ class SslAuthorizationServerConfigurationIT {
                 .basic(clientId, secret)
                 .with()
                 .formParam(this.grantTypeParamName, this.grantTypeParamValue)
+                .when()
                 .post(this.tokenRequestUrl)
                 .jsonPath()
                 .getString(this.jwtTokenNodeName);

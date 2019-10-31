@@ -10,4 +10,5 @@ ssl:
         uri: /oauth/token
         param:
           name_grant_type: grant_type
-          value_grant_type: client_credentials
+          cc_grant_type: client_credentials
+          pw_grant_type: password

@@ -58,8 +58,11 @@ class SslAuthorizationServerConfigurationIT {
     @Value("${ssl.oauth2.jwt.token.param.name_grant_type}")
     private String grantTypeParamName;
 
-    @Value("${ssl.oauth2.jwt.token.param.value_grant_type}")
-    private String grantTypeParamValue;
+    @Value("${ssl.oauth2.jwt.token.param.cc_grant_type}")
+    private String clientCredentialGrantTypeParamValue;
+
+    @Value("${ssl.oauth2.jwt.token.param.pw_grant_type}")
+    private String passwordGrantTypeParamValue;
 
     private String tokenRequestUrl;
     private String baseUrl;
@@ -70,35 +73,69 @@ class SslAuthorizationServerConfigurationIT {
         this.tokenRequestUrl = this.baseUrl + this.jwtTokenUri;
     }
 
-    @DisplayName("Test jwt token - ")
-    @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
-    @Test
-    void able_To_Get_JWT_Token() {
+    @DisplayName("JWT Token Test for different Grant Types - ")
+    @Nested
+    class JwtTokenTest {
 
-        // Given
+        @DisplayName("Test JWT Token with Client Credential Grant Type - ")
+        // @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
+        @Test
+        void able_To_Get_JWT_Token_For_Client_Credential_Grant_Type() {
 
-        // When
-        given().auth()
-                /*
-                 * preemptive(): Returns the preemptive authentication view.
-                 * This means that the authentication details are sent in the
-                 * request header regardless if the server has challenged for
-                 * authentication or not
-                 */
-                .preemptive()
-                .basic("sslClient", DefaultLoader.CLIENT_SECRET)
-                .with()
-                .formParam(this.grantTypeParamName, this.grantTypeParamValue)
-                .when()
-                .post(this.tokenRequestUrl)
-                .then()
-                .log()
-                .ifValidationFails()
-                .statusCode(HttpStatus.SC_OK)
-                .body(this.jwtTokenNodeName, notNullValue())
-                .and()
-                .time(lessThan(1500L));
-    }
+            // When
+            given().auth()
+                    /*
+                     * preemptive(): Returns the preemptive authentication view.
+                     * This means that the authentication details are sent in the
+                     * request header regardless if the server has challenged for
+                     * authentication or not
+                     */
+                    .preemptive()
+                    .basic("sslClient", DefaultLoader.CLIENT_SECRET)
+                    .with()
+                    .formParam(grantTypeParamName, clientCredentialGrantTypeParamValue)
+                    .when()
+                    .post(tokenRequestUrl)
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body(jwtTokenNodeName, notNullValue())
+                    .and()
+                    .time(lessThan(1500L));
+        }
+
+        @DisplayName("Test JWT Token with Password Grant Type - ")
+        // @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
+        @Test
+        void able_To_Get_JWT_Password_Client() {
+
+            given().auth()
+                    /*
+                     * preemptive(): Returns the preemptive authentication view.
+                     * This means that the authentication details are sent in the
+                     * request header regardless if the server has challenged for
+                     * authentication or not
+                     */
+                    .preemptive()
+                    .basic("cloud", DefaultLoader.CLIENT_SECRET)
+                    .with()
+                    .param(grantTypeParamName, passwordGrantTypeParamValue)
+                    .with()
+                    .formParam("username", "yul")
+                    .formParam("password", "123456")
+                    .when()
+                    .post("http://localhost:8081/ums/oauth/token?grant_type=password")
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body(jwtTokenNodeName, notNullValue())
+                    .and()
+                    .time(lessThan(1500L));
+        }
+
+    }//: End of class JwtTokenTest
 
     @DisplayName("Read & Write Scopes Test - ")
     @Nested
@@ -246,7 +283,7 @@ class SslAuthorizationServerConfigurationIT {
                 .preemptive()
                 .basic(clientId, secret)
                 .with()
-                .formParam(this.grantTypeParamName, this.grantTypeParamValue)
+                .formParam(this.grantTypeParamName, this.clientCredentialGrantTypeParamValue)
                 .when()
                 .post(this.tokenRequestUrl)
                 .jsonPath()

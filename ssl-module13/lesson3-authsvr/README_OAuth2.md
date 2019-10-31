@@ -843,6 +843,48 @@ For Sso Client:
 OAuth2ClientAuthenticationProcessingFilter 
 ```
 
+## Integration Test for OAuth2 with REST-assured
+
+    ``` 
+    @Slf4j
+    @ActiveProfiles("test") // Using application-test.yml in resources
+    @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+    @DisplayName("OAuth2 Authorization Server Test - ")
+    class SslAuthorizationServerConfigurationIT {
+        ... ...
+        @DisplayName("Test jwt token - ")
+        @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
+        @Test
+        void able_To_Get_JWT_Token() {
+    
+            // Given
+    
+            // When
+            given().auth()
+                    /*
+                     * preemptive(): Returns the preemptive authentication view.
+                     * This means that the authentication details are sent in the
+                     * request header regardless if the server has challenged for
+                     * authentication or not
+                     */
+                    .preemptive()
+                    .basic("sslClient", DefaultLoader.CLIENT_SECRET)
+                    .with()
+                    .formParam(this.grantTypeParamName, this.grantTypeParamValue)
+                    .when()
+                    .post(this.tokenRequestUrl)
+                    .then()
+                    .log()
+                    .ifValidationFails()
+                    .statusCode(HttpStatus.SC_OK)
+                    .body(this.jwtTokenNodeName, notNullValue())
+                    .and()
+                    .time(lessThan(1500L));
+        }
+    }
+    ```
+
+
 ## OAuth2 Authorization Code Flow in Practice
 
 1.  Get Authorization Code
@@ -877,7 +919,6 @@ OAuth2ClientAuthenticationProcessingFilter
     
     Form Params:
     "grant_type": "client_credentials"
-    
     
 
 ### Resources

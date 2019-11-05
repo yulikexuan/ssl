@@ -885,6 +885,24 @@ OAuth2ClientAuthenticationProcessingFilter
     ```
 
 
+### Debug
+
+For simple username & password authentication:
+``` 
+UsernamePasswordAuthenticationFilter
+```
+
+For OAuth2 Authorization Server: 
+``` 
+OAuth2AuthenticationProcessingFilter 
+```
+
+For OAuth2 Sso Client: 
+``` 
+OAuth2ClientAuthenticationProcessingFilter 
+```
+
+
 ## OAuth2 Authorization Code Flow in Practice
 
 1.  Get Authorization Code

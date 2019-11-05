@@ -7,8 +7,14 @@ ssl:
       token:
         node:
           name: access_token
+          refresh: refresh_token
         uri: /oauth/token
         param:
           name_grant_type: grant_type
+          name_username: username
+          name_password: password
           cc_grant_type: client_credentials
           pw_grant_type: password
+  user:
+    name: yul
+    password: 123456

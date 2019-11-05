@@ -32,6 +32,9 @@ public class User {
     private String email;
 
     @Column
+    private String verificationCode;
+
+    @Column
     private String password;
 
     @Column

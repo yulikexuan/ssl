@@ -5,6 +5,7 @@ package com.yulikexuan.ssl.app.config.security;
 
 
 import com.google.common.collect.Lists;
+import com.yulikexuan.ssl.domain.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,14 +38,22 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
     public static final String DEFAULT_SIMPLE_PW = "123456";
 
+    private final IUserService userService;
     private final UserDetailsService userDetailsService;
+    private final SslWebAuthenticationDetailsSource authenticationDetailsSource;
 
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
 
     @Autowired
-    public SslSecurityConfigerAdapter(UserDetailsService userDetailsService) {
+    public SslSecurityConfigerAdapter(
+            IUserService userService,
+            UserDetailsService userDetailsService,
+            SslWebAuthenticationDetailsSource authenticationDetailsSource) {
+
+        this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.authenticationDetailsSource = authenticationDetailsSource;
     }
 
     @Bean
@@ -83,7 +92,9 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
                 .and()
                 .formLogin()
-                .permitAll()
+                .loginPage("/login")
+                .loginProcessingUrl("/dosignin")
+                .authenticationDetailsSource(this.authenticationDetailsSource)
 
                 .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database
@@ -100,7 +111,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
     public AuthenticationProvider daoAuthenticationProvider() {
 
         final DaoAuthenticationProvider daoAuthenticationProvider =
-                new DaoAuthenticationProvider();
+                new SslDaoAuthenticationProvider(this.userService);
 
         daoAuthenticationProvider.setUserDetailsService(this.userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());

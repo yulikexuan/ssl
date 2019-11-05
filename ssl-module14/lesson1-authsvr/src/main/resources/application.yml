@@ -18,7 +18,7 @@ spring:
 app:
   security:
     permit:
-      urls: /h2-console/**,/login**,/oauth/authorize**
+      urls: /h2-console/**,/login**,/dosignin, /oauth/authorize**, /vcode**
 logging:
   level:
     org:

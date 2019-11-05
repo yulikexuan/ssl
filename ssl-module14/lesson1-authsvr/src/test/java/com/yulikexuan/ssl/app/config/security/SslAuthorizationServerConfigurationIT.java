@@ -4,14 +4,27 @@
 package com.yulikexuan.ssl.app.config.security;
 
 
+import com.jayway.restassured.response.Response;
 import com.yulikexuan.ssl.app.bootstrap.DefaultLoader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.junit.jupiter.api.*;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.net.URI;
 import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
@@ -40,8 +53,21 @@ import static org.hamcrest.Matchers.*;
 @DisplayName("OAuth2 Authorization Server Test - ")
 class SslAuthorizationServerConfigurationIT {
 
+    static final String SSL_PASSWORD_CLIENT_ID = "cloud";
     static final String SSL_CLIENT_ID = "sslClient";
     static final String SSL_READ_ONLY_CLIENT_ID = "sslReadOnlyClient";
+
+    @Value("${ssl.user.name}")
+    private String sslUserName;
+
+    @Value("${ssl.user.password}")
+    private String sslUserPassword;
+
+    @Value("${ssl.oauth2.jwt.token.param.name_username}")
+    private String paramNameUsername;
+
+    @Value("${ssl.oauth2.jwt.token.param.name_password}")
+    private String paramNamePassword;
 
     @Value("${ssl.oauth2.server.root}")
     private String oauthServerRoot;
@@ -54,6 +80,9 @@ class SslAuthorizationServerConfigurationIT {
 
     @Value("${ssl.oauth2.jwt.token.node.name}")
     private String jwtTokenNodeName;
+
+    @Value("${ssl.oauth2.jwt.token.node.refresh}")
+    private String jwtRefreshTokenNodeName;
 
     @Value("${ssl.oauth2.jwt.token.param.name_grant_type}")
     private String grantTypeParamName;
@@ -91,7 +120,7 @@ class SslAuthorizationServerConfigurationIT {
                      * authentication or not
                      */
                     .preemptive()
-                    .basic("sslClient", DefaultLoader.CLIENT_SECRET)
+                    .basic(SSL_CLIENT_ID, DefaultLoader.CLIENT_SECRET)
                     .with()
                     .formParam(grantTypeParamName, clientCredentialGrantTypeParamValue)
                     .when()
@@ -99,16 +128,19 @@ class SslAuthorizationServerConfigurationIT {
                     .then()
                     .log()
                     .ifValidationFails()
+                    .assertThat()
                     .statusCode(HttpStatus.SC_OK)
+                    .and()
                     .body(jwtTokenNodeName, notNullValue())
                     .and()
-                    .time(lessThan(1500L));
+                    .body(jwtRefreshTokenNodeName, notNullValue())
+                    .and()
+                    .time(lessThan(2000L));
         }
 
         @DisplayName("Test JWT Token with Password Grant Type - ")
-        // @RepeatedTest(value = 2, name = "{displayName} : {currentRepetition} / {totalRepetitions}")
         @Test
-        void able_To_Get_JWT_Password_Client() {
+        void able_To_Get_JWT_For_Password_Client() {
 
             given().auth()
                     /*
@@ -118,21 +150,22 @@ class SslAuthorizationServerConfigurationIT {
                      * authentication or not
                      */
                     .preemptive()
-                    .basic("cloud", DefaultLoader.CLIENT_SECRET)
+                    .basic(SSL_PASSWORD_CLIENT_ID, DefaultLoader.CLIENT_SECRET)
                     .with()
                     .param(grantTypeParamName, passwordGrantTypeParamValue)
                     .with()
-                    .formParam("username", "yul")
-                    .formParam("password", "123456")
+                    .formParam(paramNameUsername, sslUserName)
+                    .with()
+                    .formParam(paramNamePassword, sslUserPassword)
                     .when()
-                    .post("http://localhost:8081/ums/oauth/token?grant_type=password")
+                    .post(tokenRequestUrl)
                     .then()
                     .log()
                     .ifValidationFails()
                     .statusCode(HttpStatus.SC_OK)
                     .body(jwtTokenNodeName, notNullValue())
                     .and()
-                    .time(lessThan(1500L));
+                    .time(lessThan(2000L));
         }
 
     }//: End of class JwtTokenTest

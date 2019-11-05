@@ -34,6 +34,8 @@ public class UserDto {
     @NotEmpty(message = "Password is required.")
     private String password;
 
+    private String verificationCode;
+
     @NotEmpty(message = "Password confirmation is required.")
     private String passwordConfirmation;
 

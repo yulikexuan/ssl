@@ -6,8 +6,11 @@ package com.yulikexuan.ssl.app.controllers;
 
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.services.IUserService;
+import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,18 +37,21 @@ public class VerficationCodeController {
         this.userService = userService;
     }
 
-    @RequestMapping(path = "/gen")
+    @GetMapping(path = "/request")
+    public ModelAndView requestPage() {
+        return new ModelAndView("vcodeRequestPage");
+    }
+
+    @PostMapping(path = "/gen")
     public ModelAndView requestVerificationCode(
-            @RequestParam("username") final String username) {
+            @ModelAttribute("user") User user, BindingResult result,
+            ModelMap model) {
 
-        Optional<User> userOpt = this.userService.findUserByUsername(username);
-        User user = userOpt.orElse(null);
-        if (user != null) {
-            user.setVerificationCode("383106");
-            this.userService.saveUser(user);
-        }
+        Optional<User> userOpt = this.userService.findUserByUsername(
+                user.getUsername());
 
-        return new ModelAndView("qrcode", "user", user);
+        return new ModelAndView("qrcode", "user",
+                userOpt.orElse(null));
     }
 
     @GetMapping

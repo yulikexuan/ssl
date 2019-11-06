@@ -94,6 +94,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/dosignin")
+                .defaultSuccessUrl("/vcode/request")
                 .authenticationDetailsSource(this.authenticationDetailsSource)
 
                 .and() // Disable X-Frame-Options in Spring Security

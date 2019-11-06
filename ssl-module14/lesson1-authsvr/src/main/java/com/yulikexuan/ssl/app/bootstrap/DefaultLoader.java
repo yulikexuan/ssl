@@ -16,6 +16,7 @@ import com.yulikexuan.ssl.domain.services.IRoleService;
 import com.yulikexuan.ssl.domain.services.oauth2.IClientService;
 import com.yulikexuan.ssl.domain.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +33,7 @@ import java.util.Set;
 public class DefaultLoader implements CommandLineRunner {
 
     public static final String CLIENT_SECRET = "2PGlgRk9Mv";
+    public static final String DEFAULT_USER_SECRET = Base32.random();
 
     private final IUserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -132,6 +134,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleAdmin))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -141,6 +144,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -150,6 +154,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -159,6 +164,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -168,6 +174,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -177,6 +184,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -186,6 +194,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(securityRole))
                 .created(Timestamp.from(Instant.now()))
+                .verificationCode(DEFAULT_USER_SECRET)
                 .build());
 
         log.info(">>>>>>> {} users Loaded. ", this.userService.count());

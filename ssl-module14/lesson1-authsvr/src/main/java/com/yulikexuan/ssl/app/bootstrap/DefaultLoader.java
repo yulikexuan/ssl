@@ -134,7 +134,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleAdmin))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -144,7 +144,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -154,7 +154,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -164,7 +164,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -174,7 +174,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -184,7 +184,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         this.userService.saveUser(User.builder()
@@ -194,7 +194,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .enabled(true)
                 .roles(Set.of(securityRole))
                 .created(Timestamp.from(Instant.now()))
-                .verificationCode(DEFAULT_USER_SECRET)
+                .secret(DEFAULT_USER_SECRET)
                 .build());
 
         log.info(">>>>>>> {} users Loaded. ", this.userService.count());

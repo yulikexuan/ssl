@@ -832,6 +832,280 @@
       issuing of refresh tokens
 
 
+## Two-Factor Authentication 
+
+### With Google Authenticator
+
+1.  Maven Config
+
+    ``` 
+    <dependency>
+        <groupId>org.jboss.aerogear</groupId>
+        <artifactId>aerogear-otp-java</artifactId>
+        <version>1.0.0</version>
+        <scope>compile</scope>
+    </dependency>
+    ```
+    
+2.  The Domain Model: The secret which is created by using ```aerogear-otp-java```
+    should be set to new user by default
+
+    ``` 
+    @Data
+    @Entity
+    @NoArgsConstructor
+    @Builder @AllArgsConstructor
+    public class User {
+
+        ... ...    
+        @Column
+        private String secret;
+        ... ...
+    }
+
+    public static final String DEFAULT_USER_SECRET = Base32.random();
+    
+    this.userService.saveUser(User.builder()
+            .username("yul")
+            .email("yu.li@tecsys.com")
+            .password(pw)
+            .enabled(true)
+            .roles(Set.of(roleUser))
+            .created(Timestamp.from(Instant.now()))
+            .secret(DEFAULT_USER_SECRET)
+            .build());
+    ```
+    
+3.  Extra Login Parameter
+
+    a. Adjust the security configuration to accept extra parameter, 
+       the verification code
+       
+    ``` 
+    public class SslWebAuthenticationDetails extends WebAuthenticationDetails {
+    
+        private String verificationCode;
+    
+        public SslWebAuthenticationDetails(HttpServletRequest request) {
+            super(request);
+            this.verificationCode = request.getParameter("verificationCode");
+        }
+    
+        public String getVerificationCode() {
+            return verificationCode;
+        }
+    
+        public Optional<String> getVerificationCodeOpt() {
+            return Optional.ofNullable(this.verificationCode);
+        }
+    
+        public void setVerificationCode(String verificationCode) {
+            this.verificationCode = verificationCode;
+        }
+    
+    } 
+    
+    @Component
+    public class SslWebAuthenticationDetailsSource implements
+            AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> {
+    
+        @Override
+        public WebAuthenticationDetails buildDetails(HttpServletRequest context) {
+            return new SslWebAuthenticationDetails(context);
+        }
+    
+    } 
+    ```
+    
+    b. Wire in SslWebAuthenticationDetailsSource
+    ``` 
+    private final SslWebAuthenticationDetailsSource authenticationDetailsSource;
+    
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+
+        http.authorizeRequests()
+                ... ...
+                .and()
+                .formLogin()
+                .loginPage("/login")
+                .loginProcessingUrl("/dosignin")
+                .defaultSuccessUrl("/vcode/request")
+                .authenticationDetailsSource(this.authenticationDetailsSource)
+                ... ...
+
+    }//  End of configure(HttpSecurity)
+    ``` 
+    
+    c. Add the extra parameter to our login form in loginPage.html
+    ``` 
+    <div class="form-group">
+        <label class="control-label col-xs-2" for="code">
+            Verification Code:
+        </label>
+        <div class="col-xs-10">
+            <input id="code" type="text" name="verificationCode" />
+        </div>
+    </div>
+    ```
+    
+    d. Customize ```DaoAuthenticationProvider```
+    
+    ``` 
+    @Override
+    protected void additionalAuthenticationChecks(
+            UserDetails userDetails,
+            UsernamePasswordAuthenticationToken authentication)
+            throws AuthenticationException {
+
+        super.additionalAuthenticationChecks(userDetails, authentication);
+
+        String verificationCode =
+                ((SslWebAuthenticationDetails) authentication.getDetails())
+                        .getVerificationCode();
+
+        System.out.printf("Verification code from request parameter: %1$s",
+                verificationCode);
+
+        String username = authentication.getName();
+
+        if (!"admin".equals(username)) {
+            final Optional<User> userOpt = this.userService.findUserByUsername(
+                    username);
+
+            String secret = userOpt.map(User::getSecret)
+                    .orElse("");
+
+            final Totp totp = new Totp(secret);
+
+            try {
+                if (!totp.verify(verificationCode)) {
+                    throw new BadCredentialsException("Invalid verification code!");
+                }
+            } catch (final Exception e) {
+                throw new BadCredentialsException("Invalid verification code!");
+            }
+        }
+
+    }
+    ```
+    
+    e. Wire in the customized dao auth provider
+    
+    ``` 
+    @Bean
+    public AuthenticationProvider daoAuthenticationProvider() {
+
+        final DaoAuthenticationProvider daoAuthenticationProvider =
+                new SslDaoAuthenticationProvider(this.userService);
+
+        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+
+        return daoAuthenticationProvider;
+    }
+    ```
+    
+4.  Before login, the user should be able to get the verification code
+
+    a. Creatge a page for specifying the username in order to generate a new 
+       verification code
+       ``` vcodeRequestPage.html ```
+    
+    b. Create a new controller method in order to fetch the user from db and 
+       bring the user to ``` qrcode.html``` in order to generate the bar code
+       
+    ``` 
+    @Controller
+    @RequestMapping(path = "/vcode")
+    public class VerficationCodeController {
+    
+        public static String QR_PREFIX =
+                "https://chart.googleapis.com/chart?chs=200x200&chld=M%%7C0&cht=qr&chl=";
+    
+        public static String APP_NAME = "ums";
+    
+        private final IUserService userService;
+    
+        @Autowired
+        public VerficationCodeController(IUserService userService) {
+            this.userService = userService;
+        }
+    
+        @GetMapping(path = "/request")
+        public ModelAndView requestPage() {
+            return new ModelAndView("vcodeRequestPage");
+        }
+    
+        @PostMapping(path = "/gen")
+        public ModelAndView requestVerificationCode(
+                @ModelAttribute("user") User user, BindingResult result,
+                ModelMap model) {
+    
+            Optional<User> userOpt = this.userService.findUserByUsername(
+                    user.getUsername());
+    
+            return new ModelAndView("qrcode", "user",
+                    userOpt.orElse(null));
+        }
+    
+        @GetMapping
+        @ResponseBody
+        public Map<String, String> getQRUrl(
+                @RequestParam("username") final String username)
+                throws UnsupportedEncodingException {
+    
+            final Map<String, String> result = new HashMap<String, String>();
+            User user = this.userService.findUserByUsername(username).orElse(null);
+    
+            if (user == null) {
+                result.put("url", "");
+            } else {
+                result.put("url", generateQRUrl(user.getSecret(),
+                        user.getUsername()));
+            }
+    
+            return result;
+        }
+    
+        private String generateQRUrl(String secret, String username)
+                throws UnsupportedEncodingException {
+    
+            return QR_PREFIX + URLEncoder.encode(
+                    String.format("otpauth://totp/%s:%s?secret=%s&issuer=%s",
+                            APP_NAME, username, secret, APP_NAME), "UTF-8");
+        }
+    }
+    ```
+    The html page for scan the bar code: 
+    ```
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="UTF-8">
+        <title>Verification Code Request</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+    
+            <h3 style="color:#FF8800;margin:1em auto;">Verification Code Request</h3>
+    
+            <form th:action="@{/vcode/gen}" method="post" class="form-horizontal" modelAttribute="user">
+                <div class="form-group">
+                    <label class="control-label col-xs-2" for="username">Username: </label>
+                    <div class="col-xs-10">
+                        <input id="username" type="text" name="username" />
+                    </div>
+                </div>
+                <input type="submit" class="btn btn-primary" value="Go!" />
+            </form>
+    
+        </div>
+    </body>
+    </html>
+    ```
+
 ### Debug
 
 For Authorization Server: 
@@ -951,3 +1225,4 @@ OAuth2ClientAuthenticationProcessingFilter
 - [A Guide to REST-assured](https://www.baeldung.com/rest-assured-tutorial)
 - [REST-assured User Guide](https://github.com/rest-assured/rest-assured/wiki/Usage)
 - [REST Assured Authentication](https://www.baeldung.com/rest-assured-authentication)
+- [Two Factor Auth with Spring Security](https://www.baeldung.com/spring-security-two-factor-authentication-with-soft-token)

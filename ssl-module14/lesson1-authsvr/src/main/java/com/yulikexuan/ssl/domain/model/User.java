@@ -32,7 +32,7 @@ public class User {
     private String email;
 
     @Column
-    private String verificationCode;
+    private String secret;
 
     @Column
     private String password;

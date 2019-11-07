@@ -6,9 +6,7 @@ package com.yulikexuan.ssl.app.config.security;
 
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.services.IUserService;
-import com.yulikexuan.ssl.domain.services.UserService;
 import org.jboss.aerogear.security.otp.Totp;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -48,10 +46,10 @@ public class SslDaoAuthenticationProvider extends DaoAuthenticationProvider {
             final Optional<User> userOpt = this.userService.findUserByUsername(
                     username);
 
-            String userVerificationCode = userOpt.map(User::getVerificationCode)
+            String secret = userOpt.map(User::getSecret)
                     .orElse("");
 
-            final Totp totp = new Totp(userVerificationCode);
+            final Totp totp = new Totp(secret);
 
             try {
                 if (!totp.verify(verificationCode)) {

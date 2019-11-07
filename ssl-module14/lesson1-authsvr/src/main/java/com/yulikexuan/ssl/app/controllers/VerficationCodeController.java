@@ -6,7 +6,6 @@ package com.yulikexuan.ssl.app.controllers;
 
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.services.IUserService;
-import org.jboss.aerogear.security.otp.api.Base32;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -66,7 +65,7 @@ public class VerficationCodeController {
         if (user == null) {
             result.put("url", "");
         } else {
-            result.put("url", generateQRUrl(user.getVerificationCode(),
+            result.put("url", generateQRUrl(user.getSecret(),
                     user.getUsername()));
         }
 

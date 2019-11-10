@@ -243,6 +243,7 @@
     
     <modules>
         <module>lesson1-authsvr</module>
+        <module>lesson2-authsvr</module>
         <module>client-dms</module>
 	</modules>
 

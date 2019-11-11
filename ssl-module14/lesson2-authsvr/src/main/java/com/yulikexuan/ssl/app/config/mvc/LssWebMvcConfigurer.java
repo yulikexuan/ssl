@@ -19,6 +19,8 @@ public class LssWebMvcConfigurer implements WebMvcConfigurer {
     @Override
     public void addViewControllers(final ViewControllerRegistry registry) {
         registry.addViewController("/login").setViewName("loginPage");
+        registry.addViewController("/verificationcode")
+                .setViewName("verificationCodePage");
     }
 
 }///:~

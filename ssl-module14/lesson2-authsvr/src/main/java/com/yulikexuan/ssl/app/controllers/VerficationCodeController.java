@@ -4,15 +4,9 @@
 package com.yulikexuan.ssl.app.controllers;
 
 
-import com.twilio.sdk.client.TwilioRestClient;
-import com.twilio.sdk.exception.TwilioException;
-import com.yulikexuan.ssl.app.services.SmsService;
 import com.yulikexuan.ssl.domain.model.User;
 import com.yulikexuan.ssl.domain.services.IUserService;
-import org.apache.http.NameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -21,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 
 @Controller
@@ -35,26 +31,10 @@ public class VerficationCodeController {
 
     private final IUserService userService;
 
-    private final SmsService smsService;
-
     @Autowired
-    public VerficationCodeController(IUserService userService,
-                                     SmsService smsService) {
+    public VerficationCodeController(IUserService userService) {
 
         this.userService = userService;
-        this.smsService = smsService;
-    }
-
-    @GetMapping("/sms")
-    @ResponseStatus(code= HttpStatus.OK)
-    public void sendVerificationCode(@RequestParam("username") String username) {
-
-        Optional<User> userOpt = this.userService.findUserByUsername(username);
-        userOpt.ifPresent(this::sendSms);
-    }
-
-    private void sendSms(User user) {
-        this.smsService.sendVerificationCode(user);
     }
 
     @GetMapping(path = "/request")

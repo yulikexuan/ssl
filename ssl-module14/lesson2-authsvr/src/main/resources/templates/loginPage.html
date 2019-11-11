@@ -19,62 +19,25 @@
 
         <form th:action="@{/dosignin}" method="post" class="form-horizontal">
 
-            <div id="firstDiv">
-                <div class="form-group">
-                    <label class="control-label col-xs-2" for="username">Username: </label>
-                    <div class="col-xs-10">
-                        <input id="username" type="text" name="username" />
-                    </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2" for="username">Username: </label>
+                <div class="col-xs-10">
+                    <input id="username" type="text" name="username" />
                 </div>
-
-                <div class="form-group">
-                    <label class="control-label col-xs-2" for="password">Password: </label>
-                    <div class="col-xs-10">
-                        <input id="password" type="password" name="password" />
-                    </div>
-                </div>
-
-                <a href="#" class="btn btn-primary" onclick="doNext()">Sign In</a>
-
             </div>
 
-            <div id="secondDiv" style="display:none">
-
-	            <span id="qr">
-	                <p>Enter the verification code sent to you be SMS below</p>
-	            </span>
-                <div class="form-group">
-                    <label class="control-label col-xs-2" for="code"> Code:</label>
-                    <div class="col-xs-10">
-                        <input id="code" type="text" name="verificationCode" />
-                    </div>
+            <div class="form-group">
+                <label class="control-label col-xs-2" for="password">Password: </label>
+                <div class="col-xs-10">
+                    <input id="password" type="password" name="password" />
                 </div>
+            </div>
 
-                <div class="form-actions col-xs-offset-2 col-xs-10">
-                    <input type="submit" class="btn btn-primary" value="Sign In" />
-                </div>
-
+            <div class="form-actions col-xs-offset-2 col-xs-10">
+                <input type="submit" class="btn btn-primary" value="Sign In" />
             </div>
 
         </form>
-
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-        <script type="text/javascript">
-            function doNext() {
-                $("#firstDiv").hide();
-                $("#secondDiv").show();
-                var username = $("#username").val();
-                var password = $("#password").val();
-                $.ajax({
-                    url: "/ums/vcode/sms?username=" + username,
-                    type: "GET",
-                    beforeSend: function(xhr) {
-                        xhr.setRequestHeader("Authorization", "Basic " + btoa(username + ":" + password));
-                    }
-                });
-            }
-        </script>
 
     </div>
 

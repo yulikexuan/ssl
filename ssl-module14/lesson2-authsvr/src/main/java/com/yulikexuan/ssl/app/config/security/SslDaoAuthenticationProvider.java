@@ -37,6 +37,10 @@ public class SslDaoAuthenticationProvider extends DaoAuthenticationProvider {
                 ((SslWebAuthenticationDetails) authentication.getDetails())
                         .getVerificationCode();
 
+        if (verificationCode == null) {
+            throw new NullVerificationCodeException(userDetails.getUsername());
+        }
+
         System.out.printf("Verification code from request parameter: %1$s",
                 verificationCode);
 

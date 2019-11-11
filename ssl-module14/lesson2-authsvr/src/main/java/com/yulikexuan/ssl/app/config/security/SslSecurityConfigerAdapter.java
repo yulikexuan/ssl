@@ -5,6 +5,7 @@ package com.yulikexuan.ssl.app.config.security;
 
 
 import com.google.common.collect.Lists;
+import com.yulikexuan.ssl.app.services.SmsService;
 import com.yulikexuan.ssl.domain.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.expression.WebExpressionVoter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 import java.util.List;
 
@@ -40,19 +42,20 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
 
     private final IUserService userService;
     private final UserDetailsService userDetailsService;
+    private final SmsService smsService;
     private final SslWebAuthenticationDetailsSource authenticationDetailsSource;
 
     @Value("${app.security.permit.urls}")
     private String[] permitUrls;
 
     @Autowired
-    public SslSecurityConfigerAdapter(
-            IUserService userService,
-            UserDetailsService userDetailsService,
+    public SslSecurityConfigerAdapter(IUserService userService,
+            UserDetailsService userDetailsService, SmsService smsService,
             SslWebAuthenticationDetailsSource authenticationDetailsSource) {
 
         this.userService = userService;
         this.userDetailsService = userDetailsService;
+        this.smsService = smsService;
         this.authenticationDetailsSource = authenticationDetailsSource;
     }
 
@@ -96,6 +99,7 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 .loginProcessingUrl("/dosignin")
                 .defaultSuccessUrl("/vcode/request")
                 .authenticationDetailsSource(this.authenticationDetailsSource)
+                .failureHandler(this.authenticationFailureHandler())
 
                 .and() // Disable X-Frame-Options in Spring Security
                 .headers() // So we can user the console of h2 database
@@ -126,6 +130,12 @@ public class SslSecurityConfigerAdapter extends WebSecurityConfigurerAdapter {
                 List.of(new WebExpressionVoter(), new RoleVoter(),
                         new AuthenticatedVoter(), PrivilegeVoter.create());
         return new AffirmativeBased(voters);
+    }
+
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new SslUrlAuthenticationFailureHandler(this.userService,
+                this.smsService);
     }
 
 }///:~

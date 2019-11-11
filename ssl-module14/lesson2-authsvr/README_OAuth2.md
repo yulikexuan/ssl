@@ -834,7 +834,7 @@
 
 ## Two-Factor Authentication 
 
-### With Google Authenticator
+#### With Google Authenticator
 
 1.  Maven Config
 
@@ -1104,6 +1104,246 @@
         </div>
     </body>
     </html>
+    ```
+#### Verification Code With SMS
+
+- This implementation is built on the previous one, Google Authenticator
+
+1.  Maven config
+
+    ``` 
+    <dependency>
+        <groupId>com.twilio.sdk</groupId>
+        <artifactId>twilio-java-sdk</artifactId>
+        <version>7.0.0-rc-10</version>
+    </dependency>
+    ```
+
+2.  The Domain Model
+
+    ``` 
+    // Add new properties: secret and phone
+    @Data
+    @Entity
+    @NoArgsConstructor
+    @Builder @AllArgsConstructor
+    public class User {
+        ... ...
+        @Column
+        private String phone;
+    
+        @Column
+        private String secret;
+        ... ...
+    }
+    
+    // To load users
+    this.userService.saveUser(User.builder()
+            .username("yul")
+            .email("yu.li@tecsys.com")
+            .phone(this.userPhone)
+            .password(pw)
+            .enabled(true)
+            .roles(Set.of(roleUser))
+            .created(Timestamp.from(Instant.now()))
+            .secret(DEFAULT_USER_SECRET)
+            .build());
+    
+    ```
+    
+3.  Create a service to send SMS
+
+    ``` 
+    public class SmsService {
+    
+        @Value("${twilio.sid}")
+        private String smsAccountSid;
+    
+        @Value("${twilio.token}")
+        private String smsToken;
+    
+        @Value("${twilio.sender}")
+        private String smsSenderNumber;
+    
+        private TwilioRestClient twilioRestClient;
+    
+        @Bean
+        public TwilioRestClient twilioRestClient() {
+            if (this.twilioRestClient == null) {
+                this.twilioRestClient = new TwilioRestClient(smsAccountSid, smsToken);
+            }
+    
+            return this.twilioRestClient;
+        }
+    
+        public void sendVerificationCode(User user) {
+    
+            if (user == null) {
+                logTargetError("a null user");
+                return;
+            }
+    
+            String code = new Totp(user.getSecret()).now();
+            sendSms(user.getPhone(), "The verification code is " + code);
+        }
+    
+        public void sendSms(String phoneNumber, String msg) {
+    
+            if (phoneNumber == null) {
+                this.logTargetError("a null phone number");
+            }
+    
+            Message message = Message.create(this.smsAccountSid,
+                            new PhoneNumber(phoneNumber),
+                            new PhoneNumber(this.smsSenderNumber),
+                            msg == null ? "Test" : msg)
+                    .execute(this.twilioRestClient);
+    
+            log.info(">>>>>>> Twilio Status: {}", message.getStatus().toString());
+        }
+    
+        private void logTargetError(String target) {
+            log.error(">>>>>>> Cannot send sms to {}!", target);
+        }
+    
+    }
+    ```
+
+4.  Using original Login page and create a new page for entering verification code
+
+    - The original login page:
+    
+    ``` 
+    <form th:action="@{/dosignin}" method="post" class="form-horizontal">
+
+        <div class="form-group">
+            <label class="control-label col-xs-2" for="username">Username: </label>
+            <div class="col-xs-10">
+                <input id="username" type="text" name="username" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-xs-2" for="password">Password: </label>
+            <div class="col-xs-10">
+                <input id="password" type="password" name="password" />
+            </div>
+        </div>
+
+        <div class="form-actions col-xs-offset-2 col-xs-10">
+            <input type="submit" class="btn btn-primary" value="Sign In" />
+        </div>
+
+    </form>
+    ```
+    
+    - The verificationCodePage
+    
+    ``` 
+    <div class="container">
+
+        <h3 style="color:#FF8800;margin:1em auto;">Verification Code Request</h3>
+
+        <form th:action="@{/vcode/gen}" method="post" class="form-horizontal" modelAttribute="user">
+            <div class="form-group">
+                <label class="control-label col-xs-2" for="username">Username: </label>
+                <div class="col-xs-10">
+                    <input id="username" type="text" name="username" />
+                </div>
+            </div>
+            <input type="submit" class="btn btn-primary" value="Go!" />
+        </form>
+
+    </div>
+    ```
+    
+    - Create a mapping for new verification code page in ``` LssWebMvcConfigurer```
+    
+    ``` 
+    registry.addViewController("/verificationcode")
+            .setViewName("verificationCodePage");
+    ```
+
+5.  Check if having verification code entered in ``` SslDaoAuthenticationProvider ```
+    
+    ``` 
+    @Override
+    protected void additionalAuthenticationChecks(
+            UserDetails userDetails,
+            UsernamePasswordAuthenticationToken authentication)
+            throws AuthenticationException {
+
+        super.additionalAuthenticationChecks(userDetails, authentication);
+
+        String verificationCode =
+                ((SslWebAuthenticationDetails) authentication.getDetails())
+                        .getVerificationCode();
+
+        if (verificationCode == null) {
+            throw new NullVerificationCodeException(userDetails.getUsername());
+        }
+        ... ...
+    }
+    ```
+
+6.  Handle ``` NullVerificationCodeException ``` 
+
+    - Create new exception handler which extends ``` SimpleUrlAuthenticationFailureHandler ```
+    
+    - If the caught exception is an instance of ``` NullVerificationCodeException ```
+      then generate a verification code and send it by using sms
+      
+    ``` 
+    public class SslUrlAuthenticationFailureHandler
+            extends SimpleUrlAuthenticationFailureHandler {
+    
+        private final IUserService userService;
+        private final SmsService smsService;
+    
+        public SslUrlAuthenticationFailureHandler(IUserService userService,
+                                                  SmsService smsService) {
+    
+            super();
+            this.userService = userService;
+            this.smsService = smsService;
+        }
+    
+        @Override
+        public void onAuthenticationFailure(
+                HttpServletRequest request, HttpServletResponse response,
+                AuthenticationException exception)
+                throws IOException, ServletException {
+    
+            if (NullVerificationCodeException.class.isInstance(exception)) {
+                log.info(">>>>>>> Processing verification code request ... ...");
+                String username = request.getParameter("username");
+                User user = this.userService.findUserByUsername(username).get();
+                this.smsService.sendVerificationCode(user);
+                getRedirectStrategy().sendRedirect(request, response,
+                        "/verificationcode");
+            } else {
+                super.onAuthenticationFailure(request, response, exception);
+            }
+        }
+    }
+    ```
+    
+    - Register new exception handler in ``` SslSecurityConfigerAdapter ```
+    
+    ``` 
+    .and()
+    .formLogin()
+    .loginPage("/login")
+    .loginProcessingUrl("/dosignin")
+    .defaultSuccessUrl("/vcode/request")
+    .authenticationDetailsSource(this.authenticationDetailsSource)
+    .failureHandler(this.authenticationFailureHandler())
+    
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return new SslUrlAuthenticationFailureHandler(this.userService,
+                this.smsService);
+    }
     ```
 
 ### Debug

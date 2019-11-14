@@ -1,0 +1,20 @@
+# Properties for Integration Test
+ssl:
+  oauth2:
+    server:
+      root: http://localhost:%1$s/ums
+    jwt:
+      token:
+        node:
+          name: access_token
+          refresh: refresh_token
+        uri: /oauth/token
+        param:
+          name_grant_type: grant_type
+          name_username: username
+          name_password: password
+          cc_grant_type: client_credentials
+          pw_grant_type: password
+  user:
+    name: yul
+    password: 123456

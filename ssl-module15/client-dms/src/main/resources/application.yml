@@ -1,0 +1,41 @@
+# Allow Thymeleaf templates to be reloaded at dev time
+server:
+  port: 8082
+  servlet:
+    context-path: /dms
+    
+spring:
+  thymeleaf:
+    cache: false
+  session:
+    # Under the hood, Spring Boot applies configuration that is equivalent to
+    # manually adding @EnableRedisHttpSession annotation
+    # This creates a Spring bean with the name of springSessionRepositoryFilter
+    # that implements Filter
+    # The filter is in charge of replacing the HttpSession implementation to be
+    # backed by Spring Session
+    store-type: redis
+    # redis.flush-mode
+    redis:
+      namespace: spring:session
+  redis:
+    host: localhost
+    port: 6379
+
+security:
+  oauth2:
+    sso:
+      loginPage: /login
+    client:
+      clientId: dms
+      clientSecret: 2PGlgRk9Mv
+      accessTokenUri: http://localhost:8081/ums/oauth/token
+      userAuthorizationUri: http://localhost:8081/ums/oauth/authorize
+      clientAuthenticationScheme: form
+    resource:
+      userInfoUri: http://localhost:8081/ums/api/users/me
+      # preferTokenInfo: false
+      jwt:
+        public-key-location: classpath:sslkey.pub
+#        keyUri: http://localhost:8081/ums/oauth/token
+#        keyValue: 6264BB136A72A461C3ACCFB2FC1BF

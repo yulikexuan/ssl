@@ -33,6 +33,8 @@ app:
   security:
     permit:
       urls: /h2-console/**,/login**,/dosignin, /oauth/authorize**, /verificationcode
+    2fa:
+      activated: false
 logging:
   level:
     org:
@@ -40,8 +42,8 @@ logging:
         tomcat: INFO
         catalina: INFO
 twilio:
-  sid: ${TWILIO_SID}
-  token: ${TWILIO_TOKEN}
-  sender: ${TWILIO_SENDER}
+  sid: ${TWILIO_SID:}
+  token: ${TWILIO_TOKEN:}
+  sender: ${TWILIO_SENDER:}
 user:
-  phone: ${PHONE_NUMBER}
+  phone: ${PHONE_NUMBER:}

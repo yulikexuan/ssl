@@ -33,37 +33,40 @@ public class SslDaoAuthenticationProvider extends DaoAuthenticationProvider {
 
         super.additionalAuthenticationChecks(userDetails, authentication);
 
-        String verificationCode =
-                ((SslWebAuthenticationDetails) authentication.getDetails())
-                        .getVerificationCode();
-
-        if (verificationCode == null) {
-            throw new NullVerificationCodeException(userDetails.getUsername());
-        }
-
-        System.out.printf("Verification code from request parameter: %1$s",
-                verificationCode);
-
         String username = authentication.getName();
 
-        if (!"admin".equals(username)) {
-            final Optional<User> userOpt = this.userService.findUserByUsername(
-                    username);
+        User user = this.userService.findUserByUsername(username)
+                .orElseThrow(IllegalArgumentException::new);
 
-            String secret = userOpt.map(User::getSecret)
-                    .orElse("");
+        if (user.isTwoFactorAuthActivated()) {
+            final String verificationCode =
+                    ((SslWebAuthenticationDetails) authentication.getDetails())
+                            .getVerificationCode();
 
-            final Totp totp = new Totp(secret);
-
-            try {
-                if (!totp.verify(verificationCode)) {
-                    throw new BadCredentialsException("Invalid verification code!");
-                }
-            } catch (final Exception e) {
-                throw new BadCredentialsException("Invalid verification code!");
+            if (verificationCode == null) {
+                throw new NullVerificationCodeException(userDetails.getUsername());
             }
+
+            System.out.printf("Verification code from request parameter: %1$s",
+                    verificationCode);
+
+            final String secret = user.getSecret();
+            this.verify(secret, verificationCode);
         }
 
+    }
+
+    private void verify(String secret, String verificationCode) {
+
+        final Totp totp = new Totp(secret);
+
+        try {
+            if (!totp.verify(verificationCode)) {
+                throw new BadCredentialsException("Invalid verification code!");
+            }
+        } catch (final Exception e) {
+            throw new BadCredentialsException("Invalid verification code!");
+        }
     }
 
 }///:~

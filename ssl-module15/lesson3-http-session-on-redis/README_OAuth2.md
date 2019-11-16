@@ -1105,6 +1105,7 @@
     </body>
     </html>
     ```
+
 #### Verification Code With SMS
 
 - This implementation is built on the previous one, Google Authenticator
@@ -1346,6 +1347,116 @@
     }
     ```
 
+### Spring-Session with Redis
+
+1.  Add dependencies to maven pom.xml
+
+    ``` 
+    <!-- Spring Session -->
+    <dependency>
+        <groupId>org.springframework.session</groupId>
+        <artifactId>spring-session-data-redis</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+    </dependency>
+    ```
+
+2.  Config application.yml
+
+    ``` 
+    spring:
+      session:
+        # Under the hood, Spring Boot applies configuration that is equivalent to
+        # manually adding @EnableRedisHttpSession annotation
+        # This creates a Spring bean with the name of springSessionRepositoryFilter
+        # that implements Filter
+        # The filter is in charge of replacing the HttpSession implementation to be
+        # backed by Spring Session
+        store-type: redis
+        # redis.flush-mode
+        redis:
+          namespace: tecsys:ums:session
+      redis:
+        host: localhost
+        port: 6379
+    ```
+    
+### How to install Redis Server on Windows 10
+
+    - Share session data between services in the cloud without being tied to a 
+    single container (i.e. Tomcat). 
+    
+    - Additionally, it supports multiple sessions in the same browser and sending 
+    sessions in a header.
+
+1.  Install Ubuntu on Windows 10
+
+    - https://tutorials.ubuntu.com/tutorial/tutorial-ubuntu-on-windows#0
+    - https://itsfoss.com/install-ubuntu-1404-dual-boot-mode-windows-8-81-uefi/
+    - https://vitux.com/how-to-install-ubuntu-18-04-along-with-windows-10/
+    
+2.  Launch Ubuntu in Windows 10
+    
+3.  Download Redis
+    
+    - ``` $ sudo apt update ```
+    - ``` $ sudo apt install redis-server ``` 
+    
+4.  Config Redis
+    
+    - ``` sudo nano /etc/redis/redis.conf ```
+    
+    - Change "supervised no" to "supervised systemd"
+    
+5.  Test Redis
+    
+    - Start Redis-Server:
+    
+      ``` $ sudo service redis-server start ```
+    
+    - Stop Redis-Server
+    
+      ``` $ sudo service redis-server stop ```
+    
+    - Test Redis Status
+    
+      ``` $ sudo service redis-server status ```
+    
+    - To test that Redis is functioning correctly
+    
+      ```
+      $ redis-cli 
+      127.0.0.1:6379> ping
+      [Output] PONG
+      ```
+    
+    - Check that it is able to set keys
+    
+    ``` 
+    127.0.0.1:6379> set test "It's working, having fun with Redis!"
+    [Output] OK
+    ```
+    
+    - Retrieve the value assigned to "test"
+    
+    ```
+    127.0.0.1:6379> get test
+    [Output] "It's working, having fun with Redis!"
+    ```
+    
+    - Exit the Redis prompt to get back to the shell
+    
+    ```
+    127.0.0.1:6379> exit
+    ```
+        
+    - [How To Install and Configure Redis on Ubuntu 16.04](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-redis-on-ubuntu-16-04)
+    - [Redis CLI](https://www.tutorialspoint.com/redis/redis_keys.htm)
+    
+    
 ### Debug
 
 For Authorization Server: 
@@ -1466,3 +1577,4 @@ OAuth2ClientAuthenticationProcessingFilter
 - [REST-assured User Guide](https://github.com/rest-assured/rest-assured/wiki/Usage)
 - [REST Assured Authentication](https://www.baeldung.com/rest-assured-authentication)
 - [Two Factor Auth with Spring Security](https://www.baeldung.com/spring-security-two-factor-authentication-with-soft-token)
+- [Using Spring @Value with Defaults](https://www.baeldung.com/spring-value-defaults)

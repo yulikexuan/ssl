@@ -43,6 +43,9 @@ public class User {
     @Column
     private Boolean enabled;
 
+    @Column
+    private Boolean twoFactorAuthActivated;
+
     @CreationTimestamp
     @Column(updatable = false)
     private Timestamp created;
@@ -59,6 +62,10 @@ public class User {
         return Optional.ofNullable(this.roles)
                 .map(r -> ImmutableSet.copyOf(r))
                 .orElse(ImmutableSet.of());
+    }
+
+    public boolean isTwoFactorAuthActivated() {
+        return this.twoFactorAuthActivated;
     }
 
 }///:~

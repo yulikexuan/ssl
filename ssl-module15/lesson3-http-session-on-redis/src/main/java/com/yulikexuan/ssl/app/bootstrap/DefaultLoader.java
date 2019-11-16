@@ -42,8 +42,11 @@ public class DefaultLoader implements CommandLineRunner {
     private final IPrivilegeService privilegeService;
     private final IClientService sslClientDetailsService;
 
-    @Value("${user.phone}")
+    @Value("${user.phone:}")
     private String userPhone;
+
+    @Value("${app.security.2fa.activated:false}")
+    private boolean twoFactorAuthActivated;
 
     @Autowired
     public DefaultLoader(IUserService userService,
@@ -137,6 +140,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleAdmin))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -148,6 +152,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -159,6 +164,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -170,6 +176,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -181,6 +188,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -192,6 +200,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(roleUser))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)
@@ -203,6 +212,7 @@ public class DefaultLoader implements CommandLineRunner {
                 .phone(this.userPhone)
                 .password(pw)
                 .enabled(true)
+                .twoFactorAuthActivated(this.twoFactorAuthActivated)
                 .roles(Set.of(securityRole))
                 .created(Timestamp.from(Instant.now()))
                 .secret(DEFAULT_USER_SECRET)

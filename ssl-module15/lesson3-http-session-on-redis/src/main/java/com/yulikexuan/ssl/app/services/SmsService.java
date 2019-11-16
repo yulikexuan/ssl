@@ -19,13 +19,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class SmsService {
 
-    @Value("${twilio.sid}")
+    @Value("${twilio.sid:}")
     private String smsAccountSid;
 
-    @Value("${twilio.token}")
+    @Value("${twilio.token:}")
     private String smsToken;
 
-    @Value("${twilio.sender}")
+    @Value("${twilio.sender:}")
     private String smsSenderNumber;
 
     private TwilioRestClient twilioRestClient;

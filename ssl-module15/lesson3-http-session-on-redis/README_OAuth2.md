@@ -1347,6 +1347,8 @@
     }
     ```
 
+## !! Spring Session is not able to work with OAuth2 SSO Properly !!
+
 ### Spring-Session with Redis
 
 1.  Add dependencies to maven pom.xml
